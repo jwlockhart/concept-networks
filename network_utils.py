@@ -4,6 +4,7 @@
 
 import pandas as pd
 import networkx as nx
+from math import sqrt
 
 def make_net(data, min_weight=0, isolates=False):
     """Create a networkx network from our dataframe of edge weights
@@ -32,13 +33,21 @@ def make_net(data, min_weight=0, isolates=False):
 
     return g
 
+def sdiv(x,n):
+    """standard deviation for proportion"""
+    return sqrt(abs(x*(1-x))/n)
+
 def get_freq(data):
     """Compute the frequencies of each code/column
     """
+    rows = 1.0 * data.shape[0] #number of rows as float
     cols = data.columns.values
     stats = pd.DataFrame()
+    
     stats['count'] = data[cols].sum(axis=0, numeric_only=True)
-    stats['frequency'] = stats['count'] / data.shape[0]    
+    stats['frequency'] = stats['count'] / rows   
+    stats['sdiv'] = stats['frequency'].apply(sdiv, n=rows)
+    
     return stats
 
 def rand_cooccur(data, stats):
@@ -54,7 +63,7 @@ def rand_cooccur(data, stats):
         rand_co[c] = rand_co['frequency'] * stats.ix[c, 'frequency']
     
     #drop vestigial columns from stats df
-    return rand_co.drop(['count', 'frequency'], axis=1)
+    return rand_co.drop(['count', 'frequency', 'sdiv'], axis=1)
     
 def real_cooccur(data, stats):
     """Compute how often we observe codes together in the real data.
@@ -71,35 +80,39 @@ def real_cooccur(data, stats):
                                   (data[c])].shape[0] / rows
     
     #drop vestigial columns from stats df
-    return real_co.drop(['count', 'frequency'], axis=1)
+    return real_co.drop(['count', 'frequency', 'sdiv'], axis=1)
 
-def normed_diff(rand, real):
+def normed_diff(rand, real, stats):
     """Compute the normalized difference between the observed
     cooccurrance rates and those expected under the assumption of
     independence. 
     """
     #use our predicted cooccurrance matrix as a template
     cols = rand.columns.values
-    diff = rand.copy()
+    z = rand.copy()
 
     for r in cols: #rows
         for c in cols: #columns
-            #cells are the difference between actual and 
-            #predicted values, normalized by predicted values
-            diff.ix[r, c] = (real.ix[r, c] - 
-                             rand.ix[r, c]) / rand.ix[r, c]
+            #difference between actual and predicted values
+            diff = (real.ix[r, c] - rand.ix[r, c]) 
+            #standard deviation under null hypothesis
+            stdiv = sqrt((stats.ix[r, 'sdiv']**2) + 
+                                   (stats.ix[c, 'sdiv']**2))
+            #z-scores 
+            z.ix[r, c] = diff / stdiv
     
-    return diff
+    return z 
 
 def norm_cooccur(data):
-    """
+    """normalize the cooccurance rates to z scores
+    H0: codes are independent 
     """
     stats = get_freq(data)
     rand = rand_cooccur(data, stats)
     real = real_cooccur(data, stats)
-    diff = normed_diff(rand, real)
+    z = normed_diff(rand, real, stats)
     
-    return diff
+    return z
 
 def reverse(data):
     """cooccurrance shows affinity between codes, they happen together

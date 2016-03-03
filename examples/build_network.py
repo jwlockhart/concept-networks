@@ -48,10 +48,10 @@ code_cols = ['culture_problem',
              'community_victim']
 
 print "Computing co-occurrance statistics..."
-diff = norm_cooccur(df[code_cols])
+z = norm_cooccur(df[code_cols])
 
 print "Generating network..."
-g = make_net(data=diff, min_weight=2, isolates=False)
+g = make_net(data=z, min_weight=1, isolates=False)
 
 def show_graph(g):
     """Display our network. Customize to best suit your own needs."""
@@ -64,12 +64,22 @@ def show_graph(g):
     nx.draw_networkx_labels(g, pos, font_size=14, font_family='sans-serif')
 
     #divide edges into groups based on weight
-    elarge=[(u, v) for (u, v, d) in g.edges(data=True) if d['weight'] >3]
-    esmall=[(u, v) for (u, v, d) in g.edges(data=True) if d['weight'] <=3]
+    #i.e. statistical significance of cooccurance
+    e999 =[(u, v) for (u, v, d) in g.edges(data=True) if 
+           (d['weight'] >= 3.291)]
+    e990 =[(u, v) for (u, v, d) in g.edges(data=True) if 
+           (d['weight'] < 3.291) & (d['weight'] >= 2.576)]
+    e950 =[(u, v) for (u, v, d) in g.edges(data=True) if 
+           (d['weight'] < 2.576) & (d['weight'] >= 1.96)]
+    e841 =[(u, v) for (u, v, d) in g.edges(data=True) if 
+           (d['weight'] < 1.96) & (d['weight'] >= 1)]
 
     #draw edges in each group
-    nx.draw_networkx_edges(g, pos, edgelist=elarge, width=4)
-    nx.draw_networkx_edges(g, pos, edgelist=esmall, width=4, alpha=0.5,
+    nx.draw_networkx_edges(g, pos, edgelist=e999, width=4)
+    nx.draw_networkx_edges(g, pos, edgelist=e990, width=2)
+    nx.draw_networkx_edges(g, pos, edgelist=e950, width=2, alpha=0.5,
+                           edge_color='b')
+    nx.draw_networkx_edges(g, pos, edgelist=e841, width=2, alpha=0.5,
                            edge_color='b', style='dashed')
 
     #axes look silly here
