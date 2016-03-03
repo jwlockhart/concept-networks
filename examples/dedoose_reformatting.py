@@ -1,43 +1,42 @@
 # @author Jeff Lockhart <jwlock@umich.edu>
 # Example script for cleaning and reformatting Dedoose excerpt export files. 
-# version 1.0
+# version 1.1
 
 import pandas as pd
 import re
+import sys
+#add the parent directory to the current session's path
+sys.path.insert(0, '../')
+#import utility file from parent directory
+from dedoose_utils import *
+
+argv = sys.argv
+if len(argv) != 3:
+    print 'Please run this script with exactly 2 arguments. \n$ dedoose_reformatting.py [infile.xlsx] [outfile.tsv]'
+    sys.exit()
 
 #Import our data from Dedoose
-raw = pd.read_excel("data/DedooseChartExcerpts_2016_3_1_2317-ben.xlsx")
+print 'Reading in data...'
+raw = pd.read_excel(argv[1])
+
+print 'Found', raw.shape[0], 'excerpts.'
 
 '''
 One of my descriptor variables in Dedoose, 'school', wasn't merged properly.
 Here I merge the columns back together.
 '''
+print 'Merging school columns...'
 school_cols = ['school', 'school.1', 'school.2', 'school.3',
-              'school.4', 'school.5',]
-
-def school_merge(row):
-    for c in school_cols:
-        if pd.notnull(row[c]):
-            #Each row will only have one school.
-            #We can stop when we find it.
-            return row[c]
-    return ''
-    
-tmp = raw
-tmp['uni'] = ''
-tmp['uni'] = tmp.apply(school_merge, axis=1)
+              'school.4', 'school.5',]   
+raw['uni'] = ''
+raw['uni'] = raw.apply(col_merge, cols=school_cols, axis=1)
 
 
-'''
-Dedoose does some things I don't like with column names, like titling code 
-applications as 'Code: xxx Applied' and calling my participant ID numbers 
-'Document Title'. This is some quick column renaming. 
-'''
-raw = raw.rename(columns=lambda x: re.sub('Code: ','',x))
-raw = raw.rename(columns=lambda x: re.sub(' Applied','',x))
+#Simplify column names
+print 'Renaming columns...'
+raw = clean_col_names(raw)
 raw = raw.rename(columns=lambda x: re.sub('Document Title',
                                           'Participant',x))
-raw = raw.rename(columns=lambda x: re.sub('Package','Start',x))
 
 #similarly, I want my particpant IDs as ints, not strings:
 raw = raw.replace({'Participant: ': ''}, regex=True)
@@ -71,24 +70,15 @@ code_cols = ['culture_problem',
              'community_victim']
 
 #Select just the columns I want to use in analysis
+print 'Selecting columns...'
 keep_cols = ['uni', 'Participant', 'Start', 'Excerpt Copy']
 keep_cols = keep_cols + code_cols
 df = raw[keep_cols]
 
-#Flag whether this excerpt has been coded with any of the codes we care about.
-df['coded'] = False
-
-def check_codes(row):
-    for c in code_cols:
-        if row[c] == True:
-            return True
-    return False
-
-df['coded'] = df.apply(check_codes, axis=1)
-
-#Drop excerpts without any codes we care about
-df = df[df['coded'] == True]
-df.shape
+#drop excerpts that don't have any interesting codes
+print 'Selecting excerpts...'
+df = drop_uncoded(df, code_cols)
+print 'Found', df.shape[0], 'excerpts with relevant codes applied.'
 
 '''
 Sort our excerpts by which set they are from (uni), then their number 
@@ -99,4 +89,7 @@ I like that it gives me meaningful groupings.
 df.sort_values(by=['uni', 'Participant', 'Start'], axis=0, inplace=True)
 
 #Export the data to tsv for later use
-df.to_csv('data/clean.tsv', sep='\t', encoding='utf-8', index=False)
+print "Saving..."
+df.to_csv(argv[2], sep='\t', encoding='utf-8', index=False)
+
+print "Done!"
