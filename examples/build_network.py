@@ -80,6 +80,12 @@ def show_graph(g):
 print "Drawing network..."
 show_graph(g)
 
+
+#reverse network example
+diff_r = reverse(diff)
+g_r = make_net(data=diff_r, min_weight=0, isolates=False)
+
+
 print "Done!"
 
 
