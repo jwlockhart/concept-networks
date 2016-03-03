@@ -101,7 +101,13 @@ def norm_cooccur(data):
     
     return diff
 
-
+def reverse(data):
+    """cooccurrance shows affinity between codes, they happen together
+    more than we expect. However, the opposite effect is also interesting.
+    Reversing the signs on our weights gives a graph of codes that repell 
+    one another.
+    """
+    return data.applymap(lambda x: -1 * x)
 
 
 
