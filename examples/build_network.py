@@ -22,36 +22,38 @@ df = pd.read_csv(argv[1], sep='\t')
 
 #The list of codes we're interested in. 
 code_cols = ['culture_problem', 
-             'culture_absent', 
+             #'culture_absent', 
              'culture_solution', 
              'culture_helpless', 
              'culture_victim', 
              'cishet_problem', 
              'cishet_victim', 
              'cishet_solution', 
-             'cishet_absent', 
+             #'cishet_absent', 
              'cishet_helpless', 
              'sgm_victim', 
              'sgm_problem', 
              'sgm_helpless', 
-             'sgm_absent', 
+             #'sgm_absent', 
              'sgm_solution', 
              'school_problem', 
              'school_solution', 
-             'school_absent', 
+             #'school_absent', 
              'school_victim', 
              'school_helpless', 
              'community_problem', 
              'community_solution', 
              'community_helpless', 
-             'community_absent', 
+             #'community_absent', 
              'community_victim']
 
 print "Computing co-occurrance statistics..."
-z = norm_cooccur(df[code_cols])
+z = norm_cooccur(df[code_cols], directed=False)
+z_dir =norm_cooccur(df[code_cols], directed=True)
 
 print "Generating network..."
-g = make_net(data=z, min_weight=1, isolates=False)
+g = make_net(data=z, min_weight=1, isolates=False, directed=False)
+g_dir = make_net(data=z_dir, min_weight=1, isolates=False, directed=True)
 
 def show_graph(g):
     """Display our network. Customize to best suit your own needs."""
@@ -75,8 +77,8 @@ def show_graph(g):
            (d['weight'] < 1.96) & (d['weight'] >= 1)]
 
     #draw edges in each group
-    nx.draw_networkx_edges(g, pos, edgelist=e999, width=4)
-    nx.draw_networkx_edges(g, pos, edgelist=e990, width=2)
+    nx.draw_networkx_edges(g, pos, edgelist=e999, width=6, alpha=0.5)
+    nx.draw_networkx_edges(g, pos, edgelist=e990, width=2, alpha=0.5)
     nx.draw_networkx_edges(g, pos, edgelist=e950, width=2, alpha=0.5,
                            edge_color='b')
     nx.draw_networkx_edges(g, pos, edgelist=e841, width=2, alpha=0.5,
@@ -87,8 +89,11 @@ def show_graph(g):
 
     plt.show()
 
-print "Drawing network..."
+print "Drawing undirected network..."
 show_graph(g)
+
+print "Drawing directed network..."
+show_graph(g_dir)
 
 
 #reverse network example
