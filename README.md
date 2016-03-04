@@ -9,10 +9,8 @@ All code for this project will use open-source libraries rather than proprietary
 **Required Packages:**
 - pandas
 - networkx
-- numpy
 - matplotlib
-- scikit-learn
-- scipy
 - re
 - sys
+- math
 
