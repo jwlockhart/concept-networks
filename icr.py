@@ -13,11 +13,9 @@ def count_codes(coders):
         output of the alignment function)
     """
     result = coders[0].copy()
-    cols = coders[0].columns.values
     
     for i in range(1, len(coders)):
-        for c in cols:
-            result[c] = result[c] + coders[i][c]
+        result = result.add(coders[i], fill_value=0)
     
     return result
 
