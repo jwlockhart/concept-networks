@@ -5,17 +5,22 @@
 
 import pandas as pd
 
-def count_codes(coders):
+def count_codes(coders, overlap=False):
     """counts the number of coders who applied each code to each 
     excerpt.
     Input: 
         coders: a list of identically shaped data frames (e.g. the 
         output of the alignment function)
+        overlap: if True, only count excerpts all coders coded
     """
     result = coders[0].copy()
     
-    for i in range(1, len(coders)):
-        result = result.add(coders[i], fill_value=0)
+    if overlap:
+        for i in range(1, len(coders)):
+            result = result.add(coders[i])
+    else:
+        for i in range(1, len(coders)):
+            result = result.add(coders[i], fill_value=0)
     
     return result
 
