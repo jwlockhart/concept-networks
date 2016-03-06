@@ -37,6 +37,8 @@ print 'Renaming columns...'
 raw = clean_col_names(raw)
 raw = raw.rename(columns=lambda x: re.sub('Document Title',
                                           'Participant',x))
+raw = raw.rename(columns=lambda x: re.sub('Media Title',
+                                          'Participant',x))
 
 #similarly, I want my particpant IDs as ints, not strings:
 raw = raw.replace({'Participant: ': ''}, regex=True)
