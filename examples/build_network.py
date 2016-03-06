@@ -49,7 +49,7 @@ code_cols = ['culture_problem',
 
 print "Computing co-occurrance statistics..."
 z = norm_cooccur(df[code_cols], directed=False)
-z_dir =norm_cooccur(df[code_cols], directed=True)
+z_dir = norm_cooccur(df[code_cols], directed=True)
 
 print "Generating network..."
 g = make_net(data=z, min_weight=1, isolates=False, directed=False)
@@ -97,8 +97,8 @@ show_graph(g_dir)
 
 
 #reverse network example
-diff_r = reverse(diff)
-g_r = make_net(data=diff_r, min_weight=0, isolates=False)
+z_dir_r = reverse(z_dir)
+g_r = make_net(data=z_dir_r, min_weight=0, isolates=False)
 
 
 print "Done!"

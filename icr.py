@@ -45,4 +45,4 @@ def summarize(df):
         tmp['code'] = c
         r.append( pd.DataFrame(tmp).transpose() )
     
-    return pd.concat(r)
+    return pd.concat(r).fillna(0)
