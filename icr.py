@@ -1,12 +1,11 @@
 # @author Jeff Lockhart <jwlock@umich.edu>
 # utility functions for inter-coder reliability
-# version 0.1
-
+# version 0.2
 
 import pandas as pd
 
 def count_codes(coders, overlap=False):
-    """counts the number of coders who applied each code to each 
+    """Counts the number of coders who applied each code to each 
     excerpt.
     Input: 
         coders: a list of identically shaped data frames (e.g. the 
