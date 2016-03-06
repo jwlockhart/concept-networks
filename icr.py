@@ -37,3 +37,14 @@ def simple_merge(coders, threshold=1):
     
     return result
 
+def summarize(df):
+    """Returns a DataFrame with counts for each column/code. Useful 
+    for diagnostics.
+    """
+    r = []
+    for c in df.columns.values:
+        tmp = df[c].value_counts().copy()
+        tmp['code'] = c
+        r.append( pd.DataFrame(tmp).transpose() )
+    
+    return pd.concat(r)
