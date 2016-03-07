@@ -16,7 +16,11 @@ def count_codes(coders, overlap=False):
     
     if overlap:
         for i in range(1, len(coders)):
-            result = result.add(coders[i])
+            #flag rows for which we don't have data with 999
+            #assumes we'll always have less than 999 coders...
+            result = result.add(coders[i], fill_value=999)
+        #select rows without flag
+        result = result[result.ix[:,0] < 999]
     else:
         for i in range(1, len(coders)):
             result = result.add(coders[i], fill_value=0)
