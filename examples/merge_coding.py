@@ -65,22 +65,22 @@ print "Summarize that:"
 print c['xxx_n_coders_xxx'].value_counts()
 
 print "Merging code applications where any coder has applied a code"
-m = icr.simple_merge([d1,d2], threshold=1)
+m_any = icr.simple_merge([d1,d2], threshold=1)
 print "Summary of merged code applications:"
-print icr.summarize(m)
+print icr.summarize(m_any)
 
 print "Merging code applications where all coders agree on a code"
-m = icr.simple_merge([d1,d2], threshold=1, unanimous=True)
+m_all = icr.simple_merge([d1,d2], threshold=1, unanimous=True)
 print "Summary of merged code applications:"
-print icr.summarize(m)
+print icr.summarize(m_all)
 
 print "Merging code applications where at least two coders have applied a code"
-m = icr.simple_merge([d1,d2], threshold=2)
+m_two = icr.simple_merge([d1,d2], threshold=2)
 print "Summary of merged code applications:"
-print icr.summarize(m)
+print icr.summarize(m_two)
 
 print "Saving final code applications to", argv[3], "..."
-m.to_csv(argv[3], sep='\t')
+m_any.to_csv(argv[3], sep='\t')
 
 print "Done!"
 
