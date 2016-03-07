@@ -4,7 +4,8 @@
 
 import pandas as pd
 
-def count_codes(coders, min_coders=1, max_coders=99999, keep_coder_counts=False):
+def count_codes(coders, min_coders=1, max_coders=99999, 
+                keep_coder_counts=False):
     """Counts the number of coders who applied each code to each 
     excerpt.
     Input: 
@@ -29,20 +30,36 @@ def count_codes(coders, min_coders=1, max_coders=99999, keep_coder_counts=False)
     
     return result
 
-def simple_merge(coders, threshold=1):
+def simple_merge(coders, threshold=1, unanimous=False, 
+                 keep_coder_counts=False):
     """A simple merge of the codes from multiple coders.
     Input:
         coders: a list of data frames of code applications
         threshold: minimum number of coders applying a code for 
         us to use it. 
+        unanimous: require all coders who coded an excerpt to 
+        agree on a code before applying it
     """
-    counts = count_codes(coders, min_coders=threshold)
-    
+    counts = count_codes(coders, min_coders=threshold, 
+                         keep_coder_counts=True)
     result = pd.DataFrame()
-    for c in counts.columns.values:
-        result[c] = counts[c] >= threshold
+    
+    if unanimous:
+        for c in counts.columns.values:
+            #we selected n_coders > threshold already
+            result[c] = counts[c] == counts['xxx_n_coders_xxx']
+    
+    else:
+        for c in counts.columns.values:
+            #we have enough coders, but do enough of them 
+            #agree on this code?
+            result[c] = counts[c] >= threshold
+    
+    if not keep_coder_counts:
+        result = result.drop('xxx_n_coders_xxx', axis=1)
     
     return result
+
 
 def summarize(df):
     """Returns a DataFrame with counts for each column/code. Useful 

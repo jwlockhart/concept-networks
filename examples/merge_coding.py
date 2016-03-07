@@ -58,8 +58,24 @@ print "Found", c.shape[0], "coded excerpts."
 print "Code counts:"
 print icr.summarize(c)
 
-print "Merging code applications using simple_merge with a threshhold of 1"
+print "How many coders have coded each excerpt:"
+c = icr.count_codes([d1,d2], keep_coder_counts=True)
+print c['xxx_n_coders_xxx']
+print "Summarize that:"
+print c['xxx_n_coders_xxx'].value_counts()
+
+print "Merging code applications where any coder has applied a code"
 m = icr.simple_merge([d1,d2], threshold=1)
+print "Summary of merged code applications:"
+print icr.summarize(m)
+
+print "Merging code applications where all coders agree on a code"
+m = icr.simple_merge([d1,d2], threshold=1, unanimous=True)
+print "Summary of merged code applications:"
+print icr.summarize(m)
+
+print "Merging code applications where at least two coders have applied a code"
+m = icr.simple_merge([d1,d2], threshold=2)
 print "Summary of merged code applications:"
 print icr.summarize(m)
 
@@ -67,3 +83,20 @@ print "Saving final code applications to", argv[3], "..."
 m.to_csv(argv[3], sep='\t')
 
 print "Done!"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
