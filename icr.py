@@ -8,8 +8,7 @@ def count_codes(coders, min_coders=1, max_coders=99999, keep_coder_counts=False)
     """Counts the number of coders who applied each code to each 
     excerpt.
     Input: 
-        coders: a list of identically shaped data frames (e.g. the 
-        output of the alignment function)
+        coders: a list of data frames with code applications
         keep_coder_counts: whether to keep the column counting number 
         of coders who coded an excerpt
     """
