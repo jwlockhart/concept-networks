@@ -4,26 +4,29 @@
 
 import pandas as pd
 
-def count_codes(coders, overlap=False):
+def count_codes(coders, min_coders=1, max_coders=99999, keep_coder_counts=False):
     """Counts the number of coders who applied each code to each 
     excerpt.
     Input: 
         coders: a list of identically shaped data frames (e.g. the 
         output of the alignment function)
-        overlap: if True, only count excerpts all coders coded
+        keep_coder_counts: whether to keep the column counting number 
+        of coders who coded an excerpt
     """
     result = coders[0].copy()
+    result['xxx_n_coders_xxx'] = 1
     
-    if overlap:
-        for i in range(1, len(coders)):
-            #flag rows for which we don't have data with 999
-            #assumes we'll always have less than 999 coders...
-            result = result.add(coders[i], fill_value=999)
-        #select rows without flag
-        result = result[result.ix[:,0] < 999]
-    else:
-        for i in range(1, len(coders)):
-            result = result.add(coders[i], fill_value=0)
+    for i in range(1, len(coders)):
+        tmp = coders[i]
+        tmp['xxx_n_coders_xxx'] = 1
+        result = result.add(tmp, fill_value=0)
+    
+    #select only the rows where we have the right number of coders
+    result = result[(result['xxx_n_coders_xxx'] >= min_coders) & 
+                    (result['xxx_n_coders_xxx'] <= max_coders)]
+    
+    if not keep_coder_counts:
+        result = result.drop('xxx_n_coders_xxx', axis=1)
     
     return result
 
