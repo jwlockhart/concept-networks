@@ -32,12 +32,11 @@ def count_codes(coders, min_coders=1, max_coders=99999, keep_coder_counts=False)
 def simple_merge(coders, threshold=1):
     """A simple merge of the codes from multiple coders.
     Input:
-        coders: a list of identically shaped data frames (e.g. the 
-        output of the alignment function)
+        coders: a list of data frames of code applications
         threshold: minimum number of coders applying a code for 
         us to use it. 
     """
-    counts = count_codes(coders)
+    counts = count_codes(coders, min_coders=threshold)
     
     result = pd.DataFrame()
     for c in counts.columns.values:
