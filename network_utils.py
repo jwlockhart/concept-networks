@@ -53,9 +53,9 @@ def get_freq(data):
     cols = data.columns.values
     stats = pd.DataFrame()
     
-    stats['count'] = data[cols].sum(axis=0, numeric_only=True)
-    stats['frequency'] = stats['count'] / rows   
-    stats['var'] = stats['frequency'].apply(var, n=rows)
+    stats['count'] = data.sum()
+    stats['frequency'] = data.mean()  
+    stats['var'] = data.var()
     
     return stats
 
@@ -83,8 +83,7 @@ def real_cooccur(data, stats):
     
     for r in cols: #rows
         for c in cols: #columns
-            #set this cell to the number of rows with both codes
-            #TODO: normalize this better than by row count
+            #set this cell to the fraction of rows with both codes
             real_co.ix[r, c] = data[(data[r]) & 
                                   (data[c])].shape[0] / rows
     
