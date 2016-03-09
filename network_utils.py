@@ -7,12 +7,12 @@ import networkx as nx
 from math import sqrt
 
 def make_net(data, min_weight=0, isolates=False, directed=False):
-    """Create a networkx network from our dataframe of edge weights
+    '''Create a networkx network from our dataframe of edge weights
     Input:
         data: a symmetric pandas data frame of edge weights
         min_weight: ignore weights at or below this number
         isolates: boolean, do we include nodes without edges?
-    """
+    '''
     nodes = data.columns.values
     
     if directed:
@@ -39,16 +39,16 @@ def make_net(data, min_weight=0, isolates=False, directed=False):
     return g
 
 def var(x,n):
-    """variance for proportion"""
+    '''variance for proportion'''
     return abs(x*(1-x))/n
 
 def sdiv(x,n):
-    """standard deviation for proportion"""
+    '''standard deviation for proportion'''
     return sqrt(var(x,n))
 
 def get_freq(data):
-    """Compute the frequencies of each code/column
-    """
+    '''Compute the frequencies of each code/column
+    '''
     rows = 1.0 * data.shape[0] #number of rows as float
     cols = data.columns.values
     stats = pd.DataFrame()
@@ -60,9 +60,9 @@ def get_freq(data):
     return stats
 
 def rand_cooccur(data, stats):
-    """Compute the probability of any two codes cooccurring, assuming 
+    '''Compute the probability of any two codes cooccurring, assuming 
     the codes are independent.
-    """
+    '''
     cols = data.columns.values
     rand_co = stats.copy()
     
@@ -75,8 +75,8 @@ def rand_cooccur(data, stats):
     return rand_co.drop(['count', 'frequency', 'var'], axis=1)
     
 def real_cooccur(data, stats):
-    """Compute how often we observe codes together in the real data.
-    """
+    '''Compute how often we observe codes together in the real data.
+    '''
     cols = data.columns.values
     real_co = stats.copy()
     rows = 1.0 * data.shape[0] #rows as float
@@ -91,10 +91,10 @@ def real_cooccur(data, stats):
     return real_co.drop(['count', 'frequency', 'var'], axis=1)
 
 def normed_diff(rand, real, stats):
-    """Compute the normalized difference between the observed
+    '''Compute the normalized difference between the observed
     cooccurrance rates and those expected under the assumption of
     independence for undirected graphs. 
-    """
+    '''
     #use our predicted cooccurrance matrix as a template
     cols = rand.columns.values
     z = rand.copy()
@@ -113,9 +113,9 @@ def normed_diff(rand, real, stats):
     return z 
 
 def directed_random(data, stats):
-    """Calculate the probability of seeing each code given
+    '''Calculate the probability of seeing each code given
     that we've seen each other, assuming codes are independent
-    """
+    '''
     cols = data.columns.values
     dr = stats.copy()  
     
@@ -128,9 +128,9 @@ def directed_random(data, stats):
     return dr.drop(['count', 'frequency', 'var'], axis=1)
 
 def directed_proportions(data, stats):
-    """Calculate the real rate at which we see each code given
+    '''Calculate the real rate at which we see each code given
     that we have seen each other code.
-    """
+    '''
     cols = data.columns.values
     dp = stats.copy()
 
@@ -151,10 +151,10 @@ def directed_proportions(data, stats):
     return dp.drop(['count', 'frequency', 'var'], axis=1)
 
 def directed_normed_z(real, rand, stats, n):
-    """Compute the normalized difference between the observed
+    '''Compute the normalized difference between the observed
     cooccurrance rates and those expected under the assumption of
     independence, for directed graphs. 
-    """
+    '''
     #use our predicted cooccurrance matrix as a template
     cols = rand.columns.values
     z = rand.copy()
@@ -174,9 +174,9 @@ def directed_normed_z(real, rand, stats, n):
     return z
 
 def norm_cooccur(data, directed=False):
-    """normalize the cooccurance rates to z scores
+    '''normalize the cooccurance rates to z scores
     H0: codes are independent 
-    """
+    '''
     stats = get_freq(data)
     
     if directed:
@@ -192,11 +192,11 @@ def norm_cooccur(data, directed=False):
     return z
 
 def reverse(data):
-    """cooccurrance shows affinity between codes, they happen together
+    '''cooccurrance shows affinity between codes, they happen together
     more than we expect. However, the opposite effect is also interesting.
     Reversing the signs on our weights gives a graph of codes that repell 
     one another.
-    """
+    '''
     return data.applymap(lambda x: -1 * x)
 
 

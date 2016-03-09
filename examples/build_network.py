@@ -47,16 +47,16 @@ code_cols = ['culture_problem',
              #'community_absent', 
              'community_victim']
 
-print "Computing co-occurrance statistics..."
+print 'Computing co-occurrance statistics...'
 z = norm_cooccur(df[code_cols], directed=False)
 z_dir = norm_cooccur(df[code_cols], directed=True)
 
-print "Generating network..."
+print 'Generating network...'
 g = make_net(data=z, min_weight=1, isolates=False, directed=False)
 g_dir = make_net(data=z_dir, min_weight=1, isolates=False, directed=True)
 
 def show_graph(g):
-    """Display our network. Customize to best suit your own needs."""
+    '''Display our network. Customize to best suit your own needs.'''
     #canvas setup. figsize is in inches. 
     plt.figure(figsize=(12,12))
 
@@ -89,10 +89,10 @@ def show_graph(g):
 
     plt.show()
 
-print "Drawing undirected network..."
+print 'Drawing undirected network...'
 show_graph(g)
 
-print "Drawing directed network..."
+print 'Drawing directed network...'
 show_graph(g_dir)
 
 
@@ -101,7 +101,7 @@ z_dir_r = reverse(z_dir)
 g_r = make_net(data=z_dir_r, min_weight=0, isolates=False)
 
 
-print "Done!"
+print 'Done!'
 
 
 

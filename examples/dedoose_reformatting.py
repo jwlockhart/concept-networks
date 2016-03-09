@@ -91,7 +91,7 @@ I like that it gives me meaningful groupings.
 df.sort_values(by=['uni', 'Participant', 'Start'], axis=0, inplace=True)
 
 #Export the data to tsv for later use
-print "Saving..."
+print 'Saving...'
 df.to_csv(argv[2], sep='\t', encoding='utf-8', index=False)
 
-print "Done!"
+print 'Done!'
