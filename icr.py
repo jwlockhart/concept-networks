@@ -72,3 +72,45 @@ def summarize(df):
         r.append( pd.DataFrame(tmp).transpose() )
     
     return pd.concat(r).fillna(0)
+
+def percent_agreement(code_counts, n_coders):
+    ''''''
+    s = summarize(code_counts)
+    n_rows = 1.0 * code_counts.shape[0]
+    avg = 0.0
+    r = pd.DataFrame()
+    
+    if n_coders == 2:
+        r['percent_agree'] = 1 - (s[1] / n_rows)
+        avg = r['percent_agree'].mean()
+        
+    elif n_coders < 2:
+        print 'Must have at least 2 coders to compare.'
+        return
+    else:
+        print '3+ coder percent agreement not yet implemented.'
+        return
+        
+    return (r, avg)
+
+def scotts_pi(code_counts):
+    ''''''
+    s = summarize(code_counts)
+    pa, avg_pa = percent_agreement(code_counts, n_coders=2)
+
+    
+    #number of coded excerpts (x2 for 2 coders)
+    n_obs = code_counts.shape[0] * 2.0
+    
+    #joint proportion squared for when each code is and is not applied
+    #total number of 'true' cells over total cells
+    pa['jp_true'] = ( (s[1] + (2 * s[2])) / n_obs ) ** 2
+    #total 'false' cells over total cells
+    pa['jp_false'] = ( (s[1] + (2 * s[0])) / n_obs ) ** 2
+    #expected agreement
+    pa['expected'] = pa['jp_true'] + pa['jp_false']
+        
+    pa['scotts_pi'] = ( ( pa['percent_agree'] - pa['expected'] ) 
+                       / (1 - pa['expected']) )
+    
+    return (pa[['scotts_pi']], pa['scotts_pi'].mean())
