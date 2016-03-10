@@ -94,11 +94,10 @@ def percent_agreement(code_counts, n_coders):
     return (r, avg)
 
 def scotts_pi(code_counts):
-    ''''''
+    '''same as krippendorff's alpha in the limit and under certain conditions'''
     s = summarize(code_counts)
     pa, avg_pa = percent_agreement(code_counts, n_coders=2)
 
-    
     #number of coded excerpts (x2 for 2 coders)
     n_obs = code_counts.shape[0] * 2.0
     
@@ -114,3 +113,30 @@ def scotts_pi(code_counts):
                        / (1 - pa['expected']) )
     
     return (pa[['scotts_pi']], pa['scotts_pi'].mean())
+
+def krippendorffs_alpha(code_counts):
+    '''krippendorff's alpha in the case of: binary data, two coders, no missing values
+    http://web.asc.upenn.edu/usr/krippendorff/mwebreliability5.pdf
+    '''
+    code_counts
+    s = summarize(code_counts)
+    n = code_counts.shape[0] * 2
+    
+    #obs disagree = cases where only 1 coder applied the code
+    s['Do'] = s[1] 
+    #row sum product = (actual neg + disagree) * (actual pos + disagree)
+    s['rs'] = ( (s[0] * 2) + s[1] ) * ( (s[2] * 2) + s[1])
+    
+    s['krippendorffs_alpha'] = 1 - ((n - 1) * (s['Do'] / s['rs']))
+    
+    return (s[['krippendorffs_alpha']], s['krippendorffs_alpha'].mean())
+
+def compute_icr(codes1, codes2):
+    '''intercoder reliability for two coders with binary codes and no missing values'''
+    counts = count_codes([codes1, codes2], min_coders=2)
+
+    ka, avg = krippendorffs_alpha(counts)
+    pi, avg = scotts_pi(counts)
+    pa, avg = percent_agreement(counts, n_coders=2)
+
+    return pd.concat([ka, pi, pa], axis=1).sort_values(by='krippendorffs_alpha')
