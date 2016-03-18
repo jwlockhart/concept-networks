@@ -113,8 +113,8 @@ def normed_diff(rand, real, stats):
     return z 
 
 def directed_random(data, stats):
-    '''Calculate the probability of seeing each code given
-    that we've seen each other, assuming codes are independent
+    '''Calculate the conditional probability of seeing each code given
+    that we've seen each other code, assuming codes are independent.
     '''
     cols = data.columns.values
     dr = stats.copy()  
@@ -129,7 +129,8 @@ def directed_random(data, stats):
 
 def directed_proportions(data, stats):
     '''Calculate the real rate at which we see each code given
-    that we have seen each other code.
+    that we have seen each other code. I.e. calcuate the condifence
+    of each rule A -> B for all pairs of codes A, B.
     '''
     cols = data.columns.values
     dp = stats.copy()
@@ -172,6 +173,23 @@ def directed_normed_z(real, rand, stats, n):
             z.ix[r, c] = diff / stdiv
     
     return z
+
+def directed_lift(real, rand, stats, n):
+    '''Compute the lift for rules of the form A -> B for all
+    combinations of codes A, B. Lift > 1 implies positive association.
+    '''
+    #use our predicted cooccurrance matrix as a template
+    cols = rand.columns.values
+    lift = rand.copy()
+
+    for r in cols: #rows
+        for c in cols: #columns
+            try:
+                lift.ix[r, c] = (real.ix[r, c] / rand.ix[r, c]) 
+            except ZeroDivisionError::
+                lift.ix[r, c] = float('NaN')
+    
+    return lift
 
 def norm_cooccur(data, directed=False):
     '''normalize the cooccurance rates to z scores
