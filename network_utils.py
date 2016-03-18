@@ -212,7 +212,7 @@ def directed_lift(real, rand, stats, n):
         for c in cols: #columns
             try:
                 lift.ix[r, c] = (real.ix[r, c] / rand.ix[r, c]) 
-            except ZeroDivisionError::
+            except ZeroDivisionError:
                 lift.ix[r, c] = float('NaN')
     
     return lift
