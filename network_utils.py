@@ -151,7 +151,7 @@ def directed_proportions(data, stats):
     
     return dp.drop(['count', 'frequency', 'var'], axis=1)
 
-def directed_krippendorff(data, stats):
+def krippendorff(data, stats):
     '''Calculate the Krippendorff alpha statistic for each pair of
     codes. Follows:
         [this paper](http://repository.upenn.edu/cgi/viewcontent.cgi?article=1043&context=asc_papers)
