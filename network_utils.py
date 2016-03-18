@@ -151,6 +151,32 @@ def directed_proportions(data, stats):
     
     return dp.drop(['count', 'frequency', 'var'], axis=1)
 
+def directed_krippendorff(data, stats):
+    '''Calculate the Krippendorff alpha statistic for each pair of
+    codes. Follows:
+        [this paper](http://repository.upenn.edu/cgi/viewcontent.cgi?article=1043&context=asc_papers)
+    '''
+    cols = data.columns.values
+    dp = stats.copy()
+    n = data.shape[0]
+
+    for r in cols: #rows
+        for c in cols: #columns
+            count_r = stats.ix[r, 'count']
+            count_c = stats.ix[c, 'count']
+            both = data[(data[r]) & (data[c])].shape[0]
+            xor = count_r + count_c - (both * 2)
+            neither = n - both - xor
+            #count each pair twice
+            both = both * 2
+            xor = xor * 2
+            neither = neither * 2
+            
+            dp.ix[r, c] = 1 - ( (n-1) * (xor / 
+                                         ((neither + xor) * (xor + both)) ) )
+    
+    return dp.drop(['count', 'frequency', 'var'], axis=1)
+
 def directed_normed_z(real, rand, stats, n):
     '''Compute the normalized difference between the observed
     cooccurrance rates and those expected under the assumption of
