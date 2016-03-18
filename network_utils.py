@@ -40,6 +40,7 @@ def make_net(data, min_weight=0, isolates=False, directed=False):
 
 def var(x,n):
     '''variance for proportion'''
+    n = float(n)
     return abs(x*(1-x))/n
 
 def sdiv(x,n):
@@ -54,8 +55,8 @@ def get_freq(data):
     stats = pd.DataFrame()
     
     stats['count'] = data.sum()
-    stats['frequency'] = data.mean()  
-    stats['var'] = data.var()
+    stats['frequency'] = data.mean()
+    stats['var'] = stats['frequency'].apply(var, n=data.shape[0])
     
     return stats
 
