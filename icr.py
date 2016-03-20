@@ -1,6 +1,6 @@
 # @author Jeff Lockhart <jwlock@umich.edu>
 # utility functions for inter-coder reliability
-# version 0.2
+# version 1.0
 
 import pandas as pd
 
