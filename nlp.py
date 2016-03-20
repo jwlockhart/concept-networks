@@ -1,6 +1,6 @@
-
-
-# code modified from 
+# utility functions for NLP-based similarity metrics
+# version 1.0
+# code modified from: 
 # https://stackoverflow.com/questions/8897593/similarity-between-two-text-documents
 
 import nltk 
