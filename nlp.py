@@ -39,3 +39,25 @@ def cosine_sim_all(texts):
     '''
     tfidf = vectorizer.fit_transform(texts)
     return (tfidf * tfidf.T).A
+
+def make_docs(df, code_cols, text_col='Excerpt Copy'):
+    '''Create documents containing all text from text_col matching 
+    each code in code_cols. 
+    '''
+    #a list of one string for each code
+    documents = []
+
+    #concat all strings for each code into a single document
+    for code in code_cols:
+        #select matching subset
+        tmp = df[df[code] == True]
+    
+        #select the text of answers
+        answers = tmp[text_col]
+    
+        #join all the answers into one document
+        merged = ' .\n'.join(answers)
+    
+        documents.append(merged)
+        
+    return documents
