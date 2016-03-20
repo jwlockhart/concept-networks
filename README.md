@@ -13,6 +13,8 @@ All code for this project will use open-source libraries rather than proprietary
 - re
 - sys
 - math
+- sklearn
+
+**Packages for NLP:**
 - nltk
 - string
-- sklearn
