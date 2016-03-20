@@ -6,11 +6,13 @@ Ghaziani, Amin and Delia Baldassarri. 2011. "Cultural Anchors and the Organizati
 
 All code for this project will use open-source libraries rather than proprietary network analysis and statistical software. Initial qualitative coding of the data was done by a team of research assistants working on separate clones of a [Dedoose](http://www.dedoose.com) project. The excerpts and their codes are exported as csv files and then compared to calculate metrics of inter-rater reliabilityand resolve disagreements before the codes are used to generate networks for analysis. 
 
-**Required Packages:**
+**Packages:**
 - pandas
 - networkx
 - matplotlib
 - re
 - sys
 - math
-
+- ntlk
+- string
+- sklearn
