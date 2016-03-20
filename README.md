@@ -13,6 +13,6 @@ All code for this project will use open-source libraries rather than proprietary
 - re
 - sys
 - math
-- ntlk
+- nltk
 - string
 - sklearn
