@@ -5,6 +5,7 @@
 
 import nltk 
 import string
+import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 stemmer = nltk.stem.porter.PorterStemmer()
@@ -23,22 +24,27 @@ def normalize(text):
 
 vectorizer = TfidfVectorizer(tokenizer=normalize, stop_words='english')
 
-def cosine_sim_2(text1, text2):
-    '''return cosine similarity of two documents. Will be higher
-    than the similarity between those documents in cosine_sim_all
-    because that includes more documents in the space.
-    '''
-    tfidf = vectorizer.fit_transform([text1, text2])
-    print (tfidf * tfidf.T).A
-    return ((tfidf * tfidf.T).A)[0,1]
-
-def cosine_sim_all(texts):
+def cosine_sim(texts):
     '''return cosine similarity of an array of documents, such that
     any individual similarity is conditional on not just the two
     vectors being compared, but all other vectors present.
     '''
     tfidf = vectorizer.fit_transform(texts)
     return (tfidf * tfidf.T).A
+
+def cosine_sim_2(text1, text2):
+    '''return cosine similarity of two documents. Will be higher
+    than the similarity between those documents in cosine_sim_all
+    because that includes more documents in the space.
+    '''
+    return cosine_sim_all([text1, text2])[0,1]
+
+def cosine_sim_pd(docs, codes):
+    '''convert output to pandas dataframe with labels.
+    '''
+    cosine_similarities = cosine_sim(docs)
+    return pd.DataFrame(cosine_similarities, columns=codes, 
+                      index=codes)
 
 def make_docs(df, code_cols, text_col='Excerpt Copy'):
     '''Create documents containing all text from text_col matching 
