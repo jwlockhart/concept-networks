@@ -3,6 +3,7 @@
 # version 1.0
 
 import pandas as pd
+from sklearn.metrics import cohen_kappa_score
 
 def count_codes(coders, min_coders=1, max_coders=99999, 
                 keep_coder_counts=False):
@@ -131,6 +132,28 @@ def krippendorffs_alpha(code_counts):
     
     return (s[['krippendorffs_alpha']], s['krippendorffs_alpha'].mean())
 
+def cohens_kappa(codes1, codes2):
+    ''''''
+    r = []
+    code_counts = count_codes([codes1, codes2], min_coders=2, keep_coder_counts=True)
+    s = summarize(code_counts)
+    s['cohens_kappa'] = 0
+    
+    code_cols = codes1.columns.values
+    
+    x = codes1.copy()
+    y = codes2.copy()
+    x['n_coders'] = code_counts['xxx_n_coders_xxx']
+    y['n_coders'] = code_counts['xxx_n_coders_xxx']
+    x = x[x['n_coders'] == 2]
+    y = y[y['n_coders'] == 2]
+    
+    for c in code_cols:
+        k = cohen_kappa_score(x[c].values, y[c].values)
+        s.ix[c, 'cohens_kappa'] = k
+        
+    return (s[['cohens_kappa']], s['cohens_kappa'].mean())
+
 def compute_icr(codes1, codes2):
     '''intercoder reliability for two coders with binary codes and no missing values'''
     counts = count_codes([codes1, codes2], min_coders=2)
@@ -138,5 +161,14 @@ def compute_icr(codes1, codes2):
     ka, avg = krippendorffs_alpha(counts)
     pi, avg = scotts_pi(counts)
     pa, avg = percent_agreement(counts, n_coders=2)
-
-    return pd.concat([ka, pi, pa], axis=1).sort_values(by='krippendorffs_alpha')
+    ck, avg = cohens_kappa(codes1, codes2)
+    
+    #merge our metrics into a single dataframe
+    together = pd.concat([ka, pi, ck,pa], axis=1).sort_values(by='krippendorffs_alpha')
+    
+    #add a column for the number of excerpts matching each code at least once
+    together['n'] = 0
+    for c in counts.columns.values:
+        together.ix[c, 'n'] = counts[counts[c] > 0].shape[0]
+        
+    return together.drop('xxx_n_coders_xxx')

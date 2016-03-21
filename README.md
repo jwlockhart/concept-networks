@@ -15,8 +15,8 @@ A small NLP alternative is also implemented. In this approach, document similari
 - re
 - sys
 - math
+- sklearn
 
 **Packages for NLP:**
 - nltk
 - string
-- sklearn
