@@ -113,12 +113,12 @@ merged = pd.read_csv('../data/merged_person.tsv', sep='\t')
 ben = pd.read_csv('../data/ben_person.tsv', sep='\t')
 gabi = pd.read_csv('../data/gabi_person.tsv', sep='\t')
 
-print 'Generating answer networks...'
+print 'Generating person networks...'
 g_merged = gen_net(merged)
 g_ben = gen_net(ben)
 g_gabi = gen_net(gabi)
     
-print 'Drawing answer networks...'
+print 'Drawing person networks...'
 #fix the positions of nodes to the the same in all networks
 #p = nx.spring_layout(g_merged)
 p = nx.circular_layout(g_merged)
