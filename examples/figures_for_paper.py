@@ -11,7 +11,6 @@ import sys
 sys.path.insert(0, '../')
 #import utility file from parent directory
 from network_utils import *
-from subprocess import call
 
 #The list of codes we're interested in. 
 code_cols = ['culture_problem', 
