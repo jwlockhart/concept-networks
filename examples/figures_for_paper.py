@@ -1,6 +1,7 @@
 # @author Jeff Lockhart <jwlock@umich.edu>
-# Example script for generating network graphs. 
-# version 1.1
+# Actual script used to generate network diagrams in drafts of 
+# the project paper for which this code is written.
+# version 1.0
 
 import pandas as pd
 import networkx as nx
@@ -10,15 +11,7 @@ import sys
 sys.path.insert(0, '../')
 #import utility file from parent directory
 from network_utils import *
-
-argv = sys.argv
-if len(argv) != 2:
-    print 'Please run this script with exactly 1 argument.\n$ build_network.py [infile.tsv]'
-    sys.exit()
-
-#Import our data from Dedoose
-print 'Reading in data...'
-df = pd.read_csv(argv[1], sep='\t')
+from subprocess import call
 
 #The list of codes we're interested in. 
 code_cols = ['culture_problem', 
@@ -47,30 +40,21 @@ code_cols = ['culture_problem',
              #'community_absent', 
              'community_victim']
 
-print 'Counting code applications...'
-tmp = get_freq(df[code_cols])
-print 'Dropping codes applied fewer than 10 times...'
-df = df[tmp[tmp['count'] >= 10].index.values]
+def gen_net(df):
+    tmp = get_freq(df[code_cols])
+    #drop codes applied less than 10 times
+    df = df[tmp[tmp['count'] >= 10].index.values]
+    #compute cooccurance stats
+    z = norm_cooccur(df, directed=True)
+    #create network
+    g = make_net(data=z, min_weight=1, isolates=True, directed=True)
+    return g
 
-print 'Computing co-occurrance statistics...'
-z = norm_cooccur(df, directed=False)
-z_dir = norm_cooccur(df, directed=True)
-
-print 'Generating network...'
-g = make_net(data=z, min_weight=1, isolates=False, directed=False)
-g_dir = make_net(data=z_dir, min_weight=1, isolates=False, directed=True)
-
-def show_graph(g):
+def show_graph(g, pos, save_to='out.png'):
     '''Display our network. Customize to best suit your own needs.'''
     #canvas setup. figsize is in inches. 
     plt.figure(figsize=(12,12))
 
-    #layout nodes and their labels
-    pos=nx.spring_layout(g)
-    #pos=nx.circular_layout(g)
-    #pos=nx.random_layout(g)
-    #pos=nx.shell_layout(g)
-    #pos=nx.spectral_layout(g)
     nx.draw_networkx_nodes(g, pos, node_size=400)
     nx.draw_networkx_labels(g, pos, font_size=14, font_family='sans-serif')
 
@@ -95,38 +79,59 @@ def show_graph(g):
 
     #axes look silly here
     plt.axis('off')
-
-    plt.show()
-
-print 'Drawing undirected network...'
-show_graph(g)
-
-print 'Drawing directed network...'
-show_graph(g_dir)
+    
+    plt.savefig(save_to)
+    #plt.show()
 
 
-#reverse network example
-z_dir_r = reverse(z_dir)
-g_r = make_net(data=z_dir_r, min_weight=0, isolates=False)
+#Import our answer-level data
+print 'Reading in answer data...'
+merged = pd.read_csv('../data/merged.tsv', sep='\t')
+ben = pd.read_csv('../data/ben.tsv', sep='\t')
+gabi = pd.read_csv('../data/gabi.tsv', sep='\t')
 
+print 'Generating answer networks...'
+g_merged = gen_net(merged)
+g_ben = gen_net(ben)
+g_gabi = gen_net(gabi)
+    
+print 'Drawing answer networks...'
+#fix the positions of nodes to the the same in all networks
+p = nx.spring_layout(g_merged)
+#pos=nx.circular_layout(g)
+#pos=nx.random_layout(g)
+#pos=nx.shell_layout(g)
+#pos=nx.spectral_layout(g)
+    
+show_graph(g_merged, p, '../data/di_ans_merged.png')
+show_graph(g_ben, p, '../data/di_ans_ben.png')
+show_graph(g_gabi, p, '../data/di_ans_gabi.png')
+
+
+#import data aggregated to person-level
+print 'Reading in person data...'
+merged = pd.read_csv('../data/merged_person.tsv', sep='\t')
+ben = pd.read_csv('../data/ben_person.tsv', sep='\t')
+gabi = pd.read_csv('../data/gabi_person.tsv', sep='\t')
+
+print 'Generating answer networks...'
+g_merged = gen_net(merged)
+g_ben = gen_net(ben)
+g_gabi = gen_net(gabi)
+    
+print 'Drawing answer networks...'
+#fix the positions of nodes to the the same in all networks
+#p = nx.spring_layout(g_merged)
+p = nx.circular_layout(g_merged)
+#pos=nx.random_layout(g)
+#pos=nx.shell_layout(g)
+#pos=nx.spectral_layout(g)
+    
+show_graph(g_merged, p, '../data/di_per_merged.png')
+show_graph(g_ben, p, '../data/di_per_ben.png')
+show_graph(g_gabi, p, '../data/di_per_gabi.png')
 
 print 'Done!'
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

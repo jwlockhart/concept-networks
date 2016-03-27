@@ -48,8 +48,7 @@ def sdiv(x,n):
     return sqrt(var(x,n))
 
 def get_freq(data):
-    '''Compute the frequencies of each code/column
-    '''
+    '''Compute the frequencies of each code/column'''
     rows = 1.0 * data.shape[0] #number of rows as float
     cols = data.columns.values
     stats = pd.DataFrame()
@@ -76,8 +75,7 @@ def rand_cooccur(data, stats):
     return rand_co.drop(['count', 'frequency', 'var'], axis=1)
     
 def real_cooccur(data, stats):
-    '''Compute how often we observe codes together in the real data.
-    '''
+    '''Compute how often we observe codes together in the real data.'''
     cols = data.columns.values
     real_co = stats.copy()
     rows = 1.0 * data.shape[0] #rows as float
