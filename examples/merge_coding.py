@@ -19,29 +19,29 @@ d2 = pd.read_csv(argv[2], sep='\t')
 
 #columns we're interested in
 code_cols = ['culture_problem', 
-             'culture_absent', 
+             #'culture_absent', 
              'culture_solution', 
              'culture_helpless', 
              'culture_victim', 
              'cishet_problem', 
              'cishet_victim', 
              'cishet_solution', 
-             'cishet_absent', 
+             #'cishet_absent', 
              'cishet_helpless', 
              'sgm_victim', 
              'sgm_problem', 
              'sgm_helpless', 
-             'sgm_absent', 
+             #'sgm_absent', 
              'sgm_solution', 
              'school_problem', 
              'school_solution', 
-             'school_absent', 
+             #'school_absent', 
              'school_victim', 
              'school_helpless', 
              'community_problem', 
              'community_solution', 
              'community_helpless', 
-             'community_absent', 
+             #'community_absent', 
              'community_victim']
 
 #tell Pandas which columns are our indices
@@ -60,7 +60,7 @@ print icr.summarize(c)
 
 print 'How many coders have coded each excerpt:'
 c = icr.count_codes([d1,d2], keep_coder_counts=True)
-print c['xxx_n_coders_xxx']
+print c['xxx_n_coders_xxx'].head()
 print 'Summarize that:'
 print c['xxx_n_coders_xxx'].value_counts()
 

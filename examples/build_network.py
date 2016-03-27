@@ -61,7 +61,11 @@ def show_graph(g):
     plt.figure(figsize=(12,12))
 
     #layout nodes and their labels
-    pos=nx.spring_layout(g)
+    #pos=nx.spring_layout(g)
+    pos=nx.circular_layout(g)
+    #pos=nx.random_layout(g)
+    #pos=nx.shell_layout(g)
+    #pos=nx.spectral_layout(g)
     nx.draw_networkx_nodes(g, pos, node_size=400)
     nx.draw_networkx_labels(g, pos, font_size=14, font_family='sans-serif')
 
