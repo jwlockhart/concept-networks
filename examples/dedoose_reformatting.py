@@ -21,16 +21,23 @@ raw = pd.read_excel(argv[1])
 
 print 'Found', raw.shape[0], 'excerpts.'
 
-'''
-One of my descriptor variables in Dedoose, 'school', wasn't merged properly.
-Here I merge the columns back together.
-'''
+
+#Some of my descriptor variables in Dedoose, 'school', weren't merged 
+#properly. Here I merge the columns back together.
 print 'Merging school columns...'
 school_cols = ['school', 'school.1', 'school.2', 'school.3',
-              'school.4', 'school.5',]   
-raw['uni'] = ''
+              'school.4', 'school.5',]
 raw['uni'] = raw.apply(col_merge, cols=school_cols, axis=1)
 
+print 'Merging identity columns...'
+sgm_cols = ['queer.5','queer.4','queer.3','queer.2', 'queer.1', 
+            'queer']
+raw['identity'] = raw.apply(col_merge, cols=sgm_cols, axis=1)
+
+print 'Merging rank columns...'
+rank_cols = ['status.5','status.4','status.3','status.2', 
+             'status.1', 'status']
+raw['rank'] = raw.apply(col_merge, cols=rank_cols, axis=1)
 
 #Simplify column names
 print 'Renaming columns...'
@@ -46,41 +53,49 @@ raw['Participant'] = raw['Participant'].astype('int64')
 
 #The list of codes I'm interested in
 code_cols = ['culture_problem', 
-             'culture_absent', 
+             #'culture_absent', 
              'culture_solution', 
              'culture_helpless', 
              'culture_victim', 
              'cishet_problem', 
              'cishet_victim', 
              'cishet_solution', 
-             'cishet_absent', 
+             #'cishet_absent', 
              'cishet_helpless', 
              'sgm_victim', 
              'sgm_problem', 
              'sgm_helpless', 
-             'sgm_absent', 
+             #'sgm_absent', 
              'sgm_solution', 
              'school_problem', 
              'school_solution', 
-             'school_absent', 
+             #'school_absent', 
              'school_victim', 
              'school_helpless', 
              'community_problem', 
              'community_solution', 
              'community_helpless', 
-             'community_absent', 
+             #'community_absent', 
              'community_victim']
 
 #Select just the columns I want to use in analysis
 print 'Selecting columns...'
-keep_cols = ['uni', 'Participant', 'Start', 'Excerpt Copy']
+keep_cols = ['uni', 'Participant', 'Start', 'Excerpt Copy', 
+             'rank', 'identity']
 keep_cols = keep_cols + code_cols
 df = raw[keep_cols]
 
 #drop excerpts that don't have any interesting codes
-print 'Selecting excerpts...'
+print 'Selecting coded excerpts...'
 df = drop_uncoded(df, code_cols)
 print 'Found', df.shape[0], 'excerpts with relevant codes applied.'
+
+#drop excerpts from people outside my population of interest
+print 'Selecting study population...'
+df = df[df['identity'] == 'sgm']
+df = df[(df['rank'] == 'undergrad') |
+        (df['rank'] == 'likely-undergrad') |
+        (df['rank'] == 'grad-pro')]
 
 '''
 Sort our excerpts by which set they are from (uni), then their number 
