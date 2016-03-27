@@ -47,7 +47,8 @@ raw = raw.rename(columns=lambda x: re.sub('Document Title',
 raw = raw.rename(columns=lambda x: re.sub('Media Title',
                                           'Participant',x))
 
-#similarly, I want my particpant IDs as ints, not strings:
+#similarly, I want my particpant IDs as ints, not strings
+print 'Converting participant IDs to ints...'
 raw = raw.replace({'Participant: ': ''}, regex=True)
 raw['Participant'] = raw['Participant'].astype('int64')
 
