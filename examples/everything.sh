@@ -1,6 +1,10 @@
 #!/bin/bash
 #script to automate repetitive tasks with processing data for the paper
 
+#select data relevant to the project
+python select_subset.py ../data/ben_all.tsv ../data/ben.tsv
+python select_subset.py ../data/gabi_all.tsv ../data/gabi.tsv
+
 #merge codes from both coders
 python merge_coding.py ../data/ben.tsv ../data/gabi.tsv ../data/merged.tsv
 
