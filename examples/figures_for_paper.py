@@ -121,7 +121,7 @@ g_gabi = gen_net(gabi)
 print 'Drawing person networks...'
 #fix the positions of nodes to the the same in all networks
 #p = nx.spring_layout(g_merged)
-p = nx.circular_layout(g_merged)
+#p = nx.circular_layout(g_merged)
 #pos=nx.random_layout(g)
 #pos=nx.shell_layout(g)
 #pos=nx.spectral_layout(g)

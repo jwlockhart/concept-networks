@@ -4,7 +4,6 @@
 # version 1.0
 
 import pandas as pd
-import re
 import sys
 #add the parent directory to the current session's path
 sys.path.insert(0, '../')
