@@ -93,9 +93,12 @@ print 'Found', df.shape[0], 'excerpts with relevant codes applied.'
 #drop excerpts from people outside my population of interest
 print 'Selecting study population...'
 df = df[df['identity'] == 'sgm']
+print 'Found', df.shape[0], 'of those excerpts from  SGMs.'
 df = df[(df['rank'] == 'undergrad') |
         (df['rank'] == 'likely-undergrad') |
         (df['rank'] == 'grad-pro')]
+print 'Found', df.shape[0], 'of those excerpts from students.'
+
 
 '''
 Sort our excerpts by which set they are from (uni), then their number 
@@ -103,6 +106,7 @@ Sort our excerpts by which set they are from (uni), then their number
 the index where the excerpt starts. This isn't strictly necessary, but 
 I like that it gives me meaningful groupings.
 '''
+print 'Sorting on indices...'
 df.sort_values(by=['uni', 'Participant', 'Start'], axis=0, inplace=True)
 
 #Export the data to tsv for later use
