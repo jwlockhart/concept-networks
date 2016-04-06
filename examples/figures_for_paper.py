@@ -49,13 +49,13 @@ def gen_net(df):
     g = make_net(data=z, min_weight=1, isolates=True, directed=True)
     return g
 
-def show_graph(g, pos, save_to='out.png'):
+def show_graph(g, pos, save_to='out.png', ti='title'):
     '''Display our network. Customize to best suit your own needs.'''
     #canvas setup. figsize is in inches. 
-    plt.figure(figsize=(12,12))
+    plt.figure(figsize=(25,25))
 
-    nx.draw_networkx_nodes(g, pos, node_size=400)
-    nx.draw_networkx_labels(g, pos, font_size=14, font_family='sans-serif')
+    nx.draw_networkx_nodes(g, pos, node_size=10000, node_color='w')
+    nx.draw_networkx_labels(g, pos, font_size=12, font_family='sans-serif')
 
     #divide edges into groups based on weight
     #i.e. statistical significance of cooccurance
@@ -76,6 +76,7 @@ def show_graph(g, pos, save_to='out.png'):
     nx.draw_networkx_edges(g, pos, edgelist=e841, width=2, alpha=0.5,
                            edge_color='b', style='dashed')
 
+    plt.title(ti)
     #axes look silly here
     plt.axis('off')
     
@@ -102,9 +103,9 @@ p = nx.spring_layout(g_merged)
 #pos=nx.shell_layout(g)
 #pos=nx.spectral_layout(g)
     
-show_graph(g_merged, p, '../data/di_ans_merged.png')
-show_graph(g_ben, p, '../data/di_ans_ben.png')
-show_graph(g_gabi, p, '../data/di_ans_gabi.png')
+show_graph(g_merged, p, '../data/di_ans_merged.png', ti='Per-answer All Coders')
+show_graph(g_ben, p, '../data/di_ans_ben.png', ti='Per-answer Ben')
+show_graph(g_gabi, p, '../data/di_ans_gabi.png', ti='Per-answer Gabi')
 
 
 #import data aggregated to person-level
@@ -126,9 +127,9 @@ print 'Drawing person networks...'
 #pos=nx.shell_layout(g)
 #pos=nx.spectral_layout(g)
     
-show_graph(g_merged, p, '../data/di_per_merged.png')
-show_graph(g_ben, p, '../data/di_per_ben.png')
-show_graph(g_gabi, p, '../data/di_per_gabi.png')
+show_graph(g_merged, p, '../data/di_per_merged.png', ti='Per-person All Coders')
+show_graph(g_ben, p, '../data/di_per_ben.png', ti='Per-person Ben')
+show_graph(g_gabi, p, '../data/di_per_gabi.png', ti='Per-person Gabi')
 
 print 'Done!'
 
