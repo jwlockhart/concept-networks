@@ -11,6 +11,7 @@ import sys
 sys.path.insert(0, '../')
 #import utility file from parent directory
 from network_utils import *
+import nlp
 
 #The list of codes we're interested in. 
 code_cols = ['culture_problem', 
@@ -154,6 +155,58 @@ show_graph(g_gabi, p, '../data/ch_stud/di_ans_gabi.png', ti='Per-answer Gabi')
 
 show_graph(g_merged_un, p, '../data/ch_stud/un_ans_merged.png', ti='Per-person All Coders')
 
+print 'Drawing NLP networks...'
+
+text_col = 'Excerpt Copy'
+df = pd.read_csv('../data/ben_all.tsv', sep='\t')
+
+'''Remove the labels Dedoose adds. Generally, they follow
+the form 'Question: xxx; Answer:'. In my particular data,
+all questions 'xxx' match the regex 'Q\d*\w?'. You will need to 
+modify this regex to work with your question labels. Alternatively, 
+you could omit this step, but then the similarity of your documents
+would be biased in favor of those with more of the same questions.
+'''
+df = df.replace({'Question: Q\d*\w?; Answer:': ''}, regex=True)
+documents = nlp.make_docs(df, code_cols, text_col)
+cs = nlp.cosine_sim_pd(docs=documents, codes=code_cols)
+g = make_net(data=cs, min_weight=0.75, isolates=False, directed=False)
+
+def show_graph_nlp(g, save_to='test.png'):
+    '''Display our network. Customize to best suit your own needs.'''
+    plt.figure(figsize=(25,25))
+    
+    #layout nodes and their labels
+    pos=nx.spring_layout(g)
+    nx.draw_networkx_nodes(g, pos, node_size=10000, node_color='w')
+    nx.draw_networkx_labels(g, pos, font_size=12, font_family='sans-serif')
+
+    #divide edges into groups based on weight
+    #i.e. statistical significance of cooccurance
+    e999 =[(u, v) for (u, v, d) in g.edges(data=True) if 
+           (d['weight'] >= 0.9)]
+    e990 =[(u, v) for (u, v, d) in g.edges(data=True) if 
+           (d['weight'] < 0.9) & (d['weight'] >= 0.75)]
+    e950 =[(u, v) for (u, v, d) in g.edges(data=True) if 
+           (d['weight'] < 0.75) & (d['weight'] >= 0.5)]
+    e841 =[(u, v) for (u, v, d) in g.edges(data=True) if 
+           (d['weight'] < 0.5) & (d['weight'] >= 0.25)]
+    
+    #draw edges in each group
+    nx.draw_networkx_edges(g, pos, edgelist=e999, width=6, alpha=0.5)
+    nx.draw_networkx_edges(g, pos, edgelist=e990, width=2)#, alpha=0.5)
+    #nx.draw_networkx_edges(g, pos, edgelist=e950, width=2, alpha=0.5,
+    #                       edge_color='b')
+    #nx.draw_networkx_edges(g, pos, edgelist=e841, width=2, alpha=0.5,
+    #                       edge_color='b', style='dashed')
+
+    #axes look silly here
+    plt.axis('off')
+
+    plt.savefig(save_to)
+    
+show_graph_nlp(g, '../data/nlp_net.png')
+    
 print 'Done!'
 
 

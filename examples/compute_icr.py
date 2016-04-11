@@ -4,17 +4,17 @@
 # - binary data
 # - 2 coders
 # - no missing values
-# version 1.0
+# version 1.1
 
 import pandas as pd
 import sys
 
 sys.path.insert(0,'../')
-import nlp
+import icr
 
 argv = sys.argv
 if len(argv) != 3:
-    print 'Please run this script with exactly 3 arguments.\n$ merge_coding.py [infile_1.tsv] [infile_2.tsv]'
+    print 'Please run this script with exactly 3 arguments.\n$ compute_icr.py [infile_1.tsv] [infile_2.tsv]'
     sys.exit()
 
 print 'Loading data files...'

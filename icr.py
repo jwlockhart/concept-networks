@@ -1,3 +1,5 @@
+# encoding=utf8
+
 # @author Jeff Lockhart <jwlock@umich.edu>
 # utility functions for inter-coder reliability
 # version 1.0
@@ -96,8 +98,9 @@ def percent_agreement(code_counts, n_coders):
 
 def scotts_pi(code_counts):
     '''Scott's Pi statistic. 
-    Scott, W. A. (1955). Reliability of Content Analysis: The Case of Nominal Coding. Public Opinion Quarterly, 19(3), 321–325.
-    Same as krippendorff's alpha in the limit and under certain conditions'''
+    Scott, W. A. (1955). Reliability of Content Analysis: The Case of Nominal Coding. Public Opinion Quarterly, 19(3), 321–325
+    '''
+
     s = summarize(code_counts)
     pa, avg_pa = percent_agreement(code_counts, n_coders=2)
 
