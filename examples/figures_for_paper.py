@@ -39,14 +39,14 @@ code_cols = ['culture_problem',
              #'community_absent', 
              'community_victim']
 
-def gen_net(df):
+def gen_net(df, directed=True):
     tmp = get_freq(df[code_cols])
     #drop codes applied less than 10 times
     df = df[tmp[tmp['count'] >= 10].index.values]
     #compute cooccurance stats
-    z = norm_cooccur(df, directed=True)
+    z = norm_cooccur(df, directed=directed)
     #create network
-    g = make_net(data=z, min_weight=1, isolates=True, directed=True)
+    g = make_net(data=z, min_weight=1, directed=directed)
     return g
 
 def show_graph(g, pos, save_to='out.png', ti='title'):
@@ -86,50 +86,73 @@ def show_graph(g, pos, save_to='out.png', ti='title'):
 
 #Import our answer-level data
 print 'Reading in answer data...'
-merged = pd.read_csv('../data/merged.tsv', sep='\t')
-ben = pd.read_csv('../data/ben.tsv', sep='\t')
-gabi = pd.read_csv('../data/gabi.tsv', sep='\t')
+merged = pd.read_csv('../data/sgm_stud/merged.tsv', sep='\t')
+ben = pd.read_csv('../data/sgm_stud/ben.tsv', sep='\t')
+gabi = pd.read_csv('../data/sgm_stud/gabi.tsv', sep='\t')
+
+print 'Generating answer networks...'
+g_merged = gen_net(merged)
+g_ben = gen_net(ben)
+g_gabi = gen_net(gabi)
+
+g_merged_un = gen_net(merged, directed=False)
+    
+print 'Drawing answer networks...'
+#fix the positions of nodes to the the same in all networks
+layout = g_merged.copy()
+layout.add_nodes_from(merged.columns.values)
+p = nx.spring_layout(layout)
+#pos=nx.circular_layout(g)
+#pos=nx.random_layout(g)
+#pos=nx.shell_layout(g)
+#pos=nx.spectral_layout(g)
+    
+show_graph(g_merged, p, '../data/sgm_stud/di_ans_merged.png', ti='Per-answer All Coders')
+show_graph(g_ben, p, '../data/sgm_stud/di_ans_ben.png', ti='Per-answer Ben')
+show_graph(g_gabi, p, '../data/sgm_stud/di_ans_gabi.png', ti='Per-answer Gabi')
+
+show_graph(g_merged_un, p, '../data/sgm_stud/un_ans_merged.png', ti='Per-person All Coders')
+
+#import data aggregated to person-level
+print 'Reading in person data...'
+merged = pd.read_csv('../data/sgm_stud/merged_person.tsv', sep='\t')
+ben = pd.read_csv('../data/sgm_stud/ben_person.tsv', sep='\t')
+gabi = pd.read_csv('../data/sgm_stud/gabi_person.tsv', sep='\t')
+
+print 'Generating person networks...'
+g_merged = gen_net(merged)
+g_ben = gen_net(ben)
+g_gabi = gen_net(gabi)
+
+g_merged_un = gen_net(merged, directed=False)
+    
+print 'Drawing person networks...'
+    
+show_graph(g_merged, p, '../data/sgm_stud/di_per_merged.png', ti='Per-person All Coders')
+show_graph(g_ben, p, '../data/sgm_stud/di_per_ben.png', ti='Per-person Ben')
+show_graph(g_gabi, p, '../data/sgm_stud/di_per_gabi.png', ti='Per-person Gabi')
+
+show_graph(g_merged_un, p, '../data/sgm_stud/un_per_merged.png', ti='Per-person All Coders')
+
+#Import our answer-level data for cishet people
+print 'Reading in answer data...'
+merged = pd.read_csv('../data/ch_stud/merged.tsv', sep='\t')
+ben = pd.read_csv('../data/ch_stud/ben.tsv', sep='\t')
+gabi = pd.read_csv('../data/ch_stud/gabi.tsv', sep='\t')
 
 print 'Generating answer networks...'
 g_merged = gen_net(merged)
 g_ben = gen_net(ben)
 g_gabi = gen_net(gabi)
     
-print 'Drawing answer networks...'
-#fix the positions of nodes to the the same in all networks
-p = nx.spring_layout(g_merged)
-#pos=nx.circular_layout(g)
-#pos=nx.random_layout(g)
-#pos=nx.shell_layout(g)
-#pos=nx.spectral_layout(g)
+g_merged_un = gen_net(merged, directed=False)
     
-show_graph(g_merged, p, '../data/di_ans_merged.png', ti='Per-answer All Coders')
-show_graph(g_ben, p, '../data/di_ans_ben.png', ti='Per-answer Ben')
-show_graph(g_gabi, p, '../data/di_ans_gabi.png', ti='Per-answer Gabi')
+print 'Drawing answer networks...'    
+show_graph(g_merged, p, '../data/ch_stud/di_ans_merged.png', ti='Per-answer All Coders')
+show_graph(g_ben, p, '../data/ch_stud/di_ans_ben.png', ti='Per-answer Ben')
+show_graph(g_gabi, p, '../data/ch_stud/di_ans_gabi.png', ti='Per-answer Gabi')
 
-
-#import data aggregated to person-level
-print 'Reading in person data...'
-merged = pd.read_csv('../data/merged_person.tsv', sep='\t')
-ben = pd.read_csv('../data/ben_person.tsv', sep='\t')
-gabi = pd.read_csv('../data/gabi_person.tsv', sep='\t')
-
-print 'Generating person networks...'
-g_merged = gen_net(merged)
-g_ben = gen_net(ben)
-g_gabi = gen_net(gabi)
-    
-print 'Drawing person networks...'
-#fix the positions of nodes to the the same in all networks
-#p = nx.spring_layout(g_merged)
-#p = nx.circular_layout(g_merged)
-#pos=nx.random_layout(g)
-#pos=nx.shell_layout(g)
-#pos=nx.spectral_layout(g)
-    
-show_graph(g_merged, p, '../data/di_per_merged.png', ti='Per-person All Coders')
-show_graph(g_ben, p, '../data/di_per_ben.png', ti='Per-person Ben')
-show_graph(g_gabi, p, '../data/di_per_gabi.png', ti='Per-person Gabi')
+show_graph(g_merged_un, p, '../data/ch_stud/un_ans_merged.png', ti='Per-person All Coders')
 
 print 'Done!'
 

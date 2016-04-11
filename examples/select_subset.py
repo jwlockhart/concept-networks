@@ -11,8 +11,8 @@ sys.path.insert(0, '../')
 from dedoose_utils import *
 
 argv = sys.argv
-if len(argv) != 3:
-    print 'Please run this script with exactly 2 arguments. \n$ dedoose_reformatting.py [infile.tsv] [outfile.tsv]'
+if len(argv) != 4:
+    print 'Please run this script with exactly 3 arguments. \n$ dedoose_reformatting.py [infile.tsv] [outfile.tsv] [sgm|cishet]'
     sys.exit()
 
 #Import our data from Dedoose
@@ -22,29 +22,29 @@ print 'Found', raw.shape[0], 'excerpts.'
 
 #The list of codes I'm interested in
 code_cols = ['culture_problem', 
-             #'culture_absent', 
+#             'culture_absent', 
              'culture_solution', 
              'culture_helpless', 
              'culture_victim', 
              'cishet_problem', 
              'cishet_victim', 
              'cishet_solution', 
-             #'cishet_absent', 
+#             'cishet_absent', 
              'cishet_helpless', 
              'sgm_victim', 
              'sgm_problem', 
              'sgm_helpless', 
-             #'sgm_absent', 
+#             'sgm_absent', 
              'sgm_solution', 
              'school_problem', 
              'school_solution', 
-             #'school_absent', 
+#             'school_absent', 
              'school_victim', 
              'school_helpless', 
              'community_problem', 
              'community_solution', 
              'community_helpless', 
-             #'community_absent', 
+#             'community_absent', 
              'community_victim']
 
 #Select just the columns I want to use in analysis
@@ -61,8 +61,9 @@ print 'Found', df.shape[0], 'excerpts with interesting codes applied.'
 
 #drop excerpts from people outside my population of interest
 print 'Selecting study population...'
-df = df[df['identity'] == 'sgm']
-print 'Found', df.shape[0], 'of those excerpts from  SGMs.'
+df = df[df['identity'] == argv[3]]
+    
+print 'Found', df.shape[0], 'of those excerpts from  the population.'
 df = df[(df['rank'] == 'undergrad') |
         (df['rank'] == 'likely-undergrad') |
         (df['rank'] == 'grad-pro')]
