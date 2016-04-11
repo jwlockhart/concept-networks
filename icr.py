@@ -75,7 +75,7 @@ def summarize(df):
     return pd.concat(r).fillna(0)
 
 def percent_agreement(code_counts, n_coders):
-    ''''''
+    '''Returns the simple percent agreement statistic for two coders'''
     s = summarize(code_counts)
     n_rows = 1.0 * code_counts.shape[0]
     avg = 0.0
@@ -95,7 +95,9 @@ def percent_agreement(code_counts, n_coders):
     return (r, avg)
 
 def scotts_pi(code_counts):
-    '''same as krippendorff's alpha in the limit and under certain conditions'''
+    '''Scott's Pi statistic. 
+    Scott, W. A. (1955). Reliability of Content Analysis: The Case of Nominal Coding. Public Opinion Quarterly, 19(3), 321–325.
+    Same as krippendorff's alpha in the limit and under certain conditions'''
     s = summarize(code_counts)
     pa, avg_pa = percent_agreement(code_counts, n_coders=2)
 
@@ -133,7 +135,9 @@ def krippendorffs_alpha(code_counts):
     return (s[['krippendorffs_alpha']], s['krippendorffs_alpha'].mean())
 
 def cohens_kappa(codes1, codes2):
-    ''''''
+    '''Cohen's Kappa statistic.
+    Cohen, J. (1960). A Coefficient of Agreement for Nominal Scales. Educational and Psychological Measurement, XX(1), 37–46.
+    '''
     r = []
     code_counts = count_codes([codes1, codes2], min_coders=2, keep_coder_counts=True)
     s = summarize(code_counts)
@@ -155,7 +159,9 @@ def cohens_kappa(codes1, codes2):
     return (s[['cohens_kappa']], s['cohens_kappa'].mean())
 
 def compute_icr(codes1, codes2):
-    '''intercoder reliability for two coders with binary codes and no missing values'''
+    '''Returns several measures of intercoder reliability for two coders with binary 
+    codes and no missing values
+    '''
     counts = count_codes([codes1, codes2], min_coders=2)
 
     ka, avg = krippendorffs_alpha(counts)
