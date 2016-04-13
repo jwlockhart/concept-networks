@@ -1,7 +1,7 @@
 # @author Jeff Lockhart <jwlock@umich.edu>
 # Actual script used to generate network diagrams in drafts of 
 # the project paper for which this code is written.
-# version 1.0
+# version 1.1
 
 import pandas as pd
 import networkx as nx
