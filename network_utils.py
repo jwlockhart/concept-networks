@@ -287,7 +287,63 @@ def all_v_all_jaccard_sim(df):
     
     return (id_map, result)
 
+def parallel_jaccard(dic):
+    '''Map function to be used in parallel computation of 
+    all v all jaccard similarity. Individual pairwise comparisons
+    proved to be too small of jobs for decent parallel computation.
+    Thus, each job compares one element i to all other elements 
+    in range(0, i).
+    For space efficiency, a dictionary of non-zero scores is returned
+    instead of an adjacency matrix.
+    '''
+    #what column to use as our reference
+    i = dic['i']
+    #our data
+    data = dic['dat']
+    a = data[i]
+    #the number of codes we're comparing across columns
+    codes = data.shape[0]
 
+    output = []
+    
+    #loop over all the columns we need to compare
+    for k in range(0, i):
+        #temp variables
+        union = 0.0
+        intersection = 0.0
+        b = data[k]
+        #loop over the codes to compare in these cols
+        for j in range(0, codes):
+            #if at least one has a code
+            if a[j] | b[j]:
+                intersection = intersection + 1
+                #if both have the code
+                if a[j] & b[j]:
+                    union = union + 1
+        #only save scores > 0
+        if (intersection > 0) & (union > 0):
+            output.append({'j':j, 'score':(union / intersection)}) 
+            
+    return {'i':i, 'output':output}
+
+def list_people_data(df):
+    '''Generates a list of input to be mapped to parallel_jaccard().'''
+    #add a unique ID column
+    n = len(df)
+    idx = range(0, n)
+    df['uid'] = idx
+    id_map = df[['uid']]
+    df = df.set_index(['uid'])
+    #transpose data frame for easier indexing
+    data = df.transpose()
+    result = []
+    #create a list of jobs where each job is an element and a
+    #set of other elements to compare it with.
+    for i in range(0, n):
+        dic = {'i':i, 'dat':data.ix[:,0:i]}
+        result.append(dic)
+            
+    return (id_map, result)
 
 
 
