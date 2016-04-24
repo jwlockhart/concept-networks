@@ -304,7 +304,7 @@ def parallel_jaccard(dic):
     #the number of codes we're comparing across columns
     codes = data.shape[0]
 
-    output = []
+    output = {}
     
     #loop over all the columns we need to compare
     for k in range(0, i):
@@ -322,9 +322,9 @@ def parallel_jaccard(dic):
                     union = union + 1
         #only save scores > 0
         if (intersection > 0) & (union > 0):
-            output.append({'j':j, 'score':(union / intersection)}) 
+            output[k] = (union / intersection) 
             
-    return {'i':i, 'output':output}
+    return {'i':i, 'Jaccard':output}
 
 def list_people_data(df):
     '''Generates a list of input to be mapped to parallel_jaccard().'''
