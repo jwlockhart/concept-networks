@@ -11,6 +11,7 @@ python select_subset.py ../data/gabi_all.tsv ../data/ch_stud/gabi.tsv cishet
 #merge codes from both coders
 python merge_coding.py ../data/sgm_stud/ben.tsv ../data/sgm_stud/gabi.tsv ../data/sgm_stud/merged.tsv
 python merge_coding.py ../data/ch_stud/ben.tsv ../data/ch_stud/gabi.tsv ../data/ch_stud/merged.tsv
+python merge_coding.py ../data/ben_all.tsv ../data/gabi_all.tsv ../data/merged_all.tsv
 
 #calculate inter-coder reliability
 python compute_icr.py ../data/ben_all.tsv ../data/gabi_all.tsv > ../data/icr_results.txt

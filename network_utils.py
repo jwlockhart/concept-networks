@@ -1,6 +1,7 @@
 # @author Jeff Lockhart <jwlock@umich.edu>
-# utility functions for making network graphs out of code/tag applications in qualitative data
-# version 0.1
+# utility functions for making network graphs out of code/tag 
+# applications in qualitative data
+# version 2.0
 
 import pandas as pd
 import networkx as nx
@@ -242,7 +243,49 @@ def reverse(data):
     '''
     return data.applymap(lambda x: -1 * x)
 
+def jaccard(a, b):
+    '''Jaccard similarity index for two vectors'''
+    n = len(a)
+    union = 0.0
+    intersection = 0.0
+    #iterate over vector elements
+    for i in range(0, n):
+        #if at least one has a code
+        if a[j] | b[j]:
+            intersection = intersection + 1
+            #if both have the code
+            if a[j] & b[j]:
+                union = union + 1
+    
+    result = 0.0
+    if intersection > 0:
+        result = union / intersection
+    
+    return result
 
+def all_v_all_jaccard_sim(df):
+    '''Serial implementation of all v all Jaccard similarity.
+    Slow, space intensive. Reccomended only for small data sets.
+    Used here to compute the edge weights on a network that is the 
+    projection from codes onto people or onto answers.
+    '''
+    #add a unique ID column
+    n = len(df) + 1
+    idx = range(1, n)
+    df['uid'] = idx
+    id_map = df[['uid']]
+    df = df.set_index(['uid'])
+    
+    data = df.transpose()
+    result = pd.DataFrame(0, index=idx, columns=idx)
+    
+    for i in range(1, n):
+        if i % 50 == 0:
+            print (i*100.0)/n, '% of', n, 'done...'
+        for j in range(1, i):
+            result.ix[i, j] = jaccard(data[i], data[j])
+    
+    return (id_map, result)
 
 
 
