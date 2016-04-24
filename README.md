@@ -17,6 +17,9 @@ A small NLP alternative is also implemented. In this approach, document similari
 - math
 - sklearn
 
-**Packages for NLP:**
+**Packages for NLP code:**
 - nltk
 - string
+
+**Packages for optional parallel implementations:**
+- ipyparallel 

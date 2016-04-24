@@ -30,10 +30,13 @@ print 'Computations finished!'
 
 #TODO: save results
 
+
+# 
+
 print 'Creating job list for answer v answer Jaccard similarity...'
 (m2, r2) = list_people_data(answers)
 print 'Computing answer v answer similarity...'
-output = view.map_sync(parallel_jaccard, r2)
+output2 = view.map_sync(parallel_jaccard, r2)
 print 'Computations finished!'
 
 #TODO: save results
