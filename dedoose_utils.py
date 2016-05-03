@@ -1,6 +1,6 @@
 # @author Jeff Lockhart <jwlock@umich.edu>
 # utility functions for working with excerpts coded in dedoose and exported to flat files
-# version 1.0
+# version 1.1
 
 import pandas as pd
 import re
@@ -10,7 +10,7 @@ works reliably despite this warning (which only appears in some environments).
 '''
 pd.options.mode.chained_assignment = None
 
-def col_merge(row, cols):
+def col_merge(row, cols, fill_na=''):
     '''Sometimes Dedoose doesn't recognise that descriptor columns 
     from different imports are the same. This applyable function 
     merges them back together for us. 
@@ -21,7 +21,7 @@ def col_merge(row, cols):
             #Each row will only have one school.
             #We can stop when we find it.
             return row[c]
-    return ''
+    return fill_na
 
 def clean_col_names(df):
     '''Dedoose column names are clumsy, like titling code applications 

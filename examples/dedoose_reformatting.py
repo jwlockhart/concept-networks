@@ -1,6 +1,6 @@
 # @author Jeff Lockhart <jwlock@umich.edu>
 # Example script for cleaning and reformatting Dedoose excerpt export files. 
-# version 1.2
+# version 2.0
 
 import pandas as pd
 import re
@@ -27,17 +27,45 @@ print 'Found', raw.shape[0], 'excerpts.'
 print 'Merging school columns...'
 school_cols = ['school', 'school.1', 'school.2', 'school.3',
               'school.4', 'school.5',]
-raw['uni'] = raw.apply(col_merge, cols=school_cols, axis=1)
+raw['uni'] = raw.apply(col_merge, cols=school_cols, fill_na='fsu', axis=1)
 
 print 'Merging identity columns...'
-sgm_cols = ['queer.5','queer.4','queer.3','queer.2', 'queer.1', 
-            'queer']
-raw['identity'] = raw.apply(col_merge, cols=sgm_cols, axis=1)
+cols = raw.columns.values
+#a list of column sets we want to merge back together
+to_merge = ['Q3-g', 'Q3-l', 'Q3-b', 'Q3-ace', 'Q3-s', 'Q3-queer', 'Q3-other',
+            'Q3-quest', 'Q3-ally', 'Q4-m', 'Q4-f', 'Q4-gq', 'Q4-t', 
+            'Q4-i', 'Q4-other']
+for a in to_merge:
+    #for each set, make a regex matching it
+    regex=re.compile('^' + a + '.*')
+    #select all columns matching the set
+    these_cols = [m.group(0) for l in cols for m in [regex.search(l)] if m]
+    print 'Merging', these_cols, "..."
+    raw[a] = raw.apply(col_merge, cols=these_cols, axis=1)
+
+print 'Identifying SGMs and CisHets...'
+def find_ident(row, q_cols):
+    result = 'unknown'
+    #see if they match any of the SGM identities
+    for c in q_cols:
+        if row[c] != '':
+            result = 'sgm'
+    #if not, see if they are cisgender and heterosexual
+    if result == 'unknown':
+        if row['Q4-f'] or row['Q4-m']:
+            if row['Q3-s'] != '':
+                result = 'cishet'
+    return result
+
+q_c = ['Q3-g', 'Q3-l', 'Q3-b', 'Q3-quest', 'Q3-other', 
+       'Q3-ace', 'Q3-queer', 'Q4-gq', 'Q4-t', 'Q4-i', 'Q4-other']
+raw['identity'] = raw.apply(find_ident, q_cols=q_c, axis=1)
 
 print 'Merging rank columns...'
 rank_cols = ['status.5','status.4','status.3','status.2', 
              'status.1', 'status']
-raw['rank'] = raw.apply(col_merge, cols=rank_cols, axis=1)
+raw['rank'] = raw.apply(col_merge, cols=rank_cols, 
+                        fill_na='likely-undergrad', axis=1)
 
 #Simplify column names
 print 'Renaming columns...'
@@ -82,20 +110,21 @@ code_cols = ['culture_problem',
 #Select just the columns I want to use in analysis
 print 'Selecting columns...'
 keep_cols = ['uni', 'Participant', 'Start', 'Excerpt Copy', 
-             'rank', 'identity']
+             'rank', 'identity', 'Q3-g', 'Q3-l', 'Q3-b', 'Q3-quest',
+             'Q3-ace', 'Q3-queer', 'Q4-gq', 'Q4-t', 'Q4-i', 'angry_cishet']
 keep_cols = keep_cols + code_cols
 df = raw[keep_cols]
 
 #drop excerpts that don't have any interesting codes
-print 'Selecting coded excerpts...'
-df = drop_uncoded(df, code_cols)
-print 'Found', df.shape[0], 'excerpts with codes applied.'
+print 'Counting coded excerpts...'
+tmp = drop_uncoded(df, code_cols)
+print 'Found', tmp.shape[0], 'excerpts with interesting codes applied.'
 
 '''
 Sort our excerpts by which set they are from (uni), then their number 
 (participant numbers are only unique within sets in my data), then by 
 the index where the excerpt starts. This isn't strictly necessary, but 
-I like that it gives me meaningful groupings.
+it gives me meaningful groupings.
 '''
 print 'Sorting on indices...'
 df.sort_values(by=['uni', 'Participant', 'Start'], axis=0, inplace=True)
