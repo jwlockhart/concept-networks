@@ -1,7 +1,7 @@
 # @author Jeff Lockhart <jwlock@umich.edu>
 # Example script for selecting the subset of our data that matches
 # our study criteria. 
-# version 1.0
+# version 1.1
 
 import pandas as pd
 import sys
@@ -12,7 +12,7 @@ from dedoose_utils import *
 
 argv = sys.argv
 if len(argv) != 4:
-    print 'Please run this script with exactly 3 arguments. \n$ dedoose_reformatting.py [infile.tsv] [outfile.tsv] [sgm|cishet]'
+    print 'Please run this script with exactly 3 arguments. \n$ select_subset.py [infile.tsv] [outfile.tsv] [sgm|cishet|all]'
     sys.exit()
 
 #Import our data from Dedoose
@@ -61,7 +61,10 @@ print 'Found', df.shape[0], 'excerpts with interesting codes applied.'
 
 #drop excerpts from people outside my population of interest
 print 'Selecting study population...'
-df = df[df['identity'] == argv[3]]
+if argv[3] == 'all':
+    print 'Selecting everyone...'
+else:
+    df = df[df['identity'] == argv[3]]
     
 print 'Found', df.shape[0], 'of those excerpts from  the population.'
 df = df[(df['rank'] == 'undergrad') |

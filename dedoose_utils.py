@@ -34,22 +34,27 @@ def clean_col_names(df):
     return df
 
 def check_codes(row, cols):
-    '''check whether this excerpt has the codes we care abotu applied to it.
+    '''check whether this excerpt has the codes we care about applied to it.
     '''
+    result = False
     for c in cols:
-        if row[c] == True:
-            return True
-    return False
+        if row[c]:
+            result = True
+    return result
 
-def drop_uncoded(df, code_cols):
+def drop_uncoded(df, code_cols, inverse=False):
     '''Not all excerpts will have codes that we're interested in. This 
     function keeps just the ones that are relevant to our analysis.
     '''
     #Flag whether this excerpt has been coded with any of the codes we care about.
     df['xxcodedxx'] = df.apply(check_codes, cols=code_cols, axis=1)
-    
-    #Drop excerpts without any codes we care about
-    df = df[df['xxcodedxx'] == True]
+        
+    if inverse:
+        #Drop all excerpts with codes we care about
+        df = df[df['xxcodedxx'] == False]
+    else:
+        #Drop excerpts without any codes we care about
+        df = df[df['xxcodedxx']]
     
     #Drop our temporary column
     return df.drop('xxcodedxx', axis=1)

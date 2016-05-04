@@ -50,13 +50,13 @@ def simple_merge(coders, threshold=1, unanimous=False,
     if unanimous:
         for c in counts.columns.values:
             #we selected n_coders > threshold already
-            result[c] = counts[c] == counts['xxx_n_coders_xxx']
+            result[c] = (counts[c] == counts['xxx_n_coders_xxx'])
     
     else:
         for c in counts.columns.values:
             #we have enough coders, but do enough of them 
             #agree on this code?
-            result[c] = counts[c] >= threshold
+            result[c] = (counts[c] >= threshold)
     
     if not keep_coder_counts:
         result = result.drop('xxx_n_coders_xxx', axis=1)
