@@ -1,7 +1,7 @@
 # @author Jeff Lockhart <jwlock@umich.edu>
 # Example script for generating network graphs of relations between people
 # based on similarity scores. 
-# version 1.0
+# version 1.1
 
 import pandas as pd
 import networkx as nx
@@ -109,7 +109,8 @@ def show_graph_person(g, save_to='test.png', p=None, cat_name=None, cat_values=N
     print 'Drawing nodes...'
     #all nodes:
     if cat_name is None:
-        nx.draw_networkx_nodes(g, pos, node_size=20, ax=a)
+        #nx.draw_networkx_nodes(g, pos, node_size=20, ax=a)
+        pass
     else:
         for i, cat in enumerate(cat_values):
             tmp = [n for (n, d) in g.nodes(data=True) if d[cat_name] == cat]
@@ -128,6 +129,8 @@ to_make = {'identity': ['sgm','cishet'],
            'rank': ['undergrad', 'grad-pro', 'faculty', 'staff'],
            'sexuality': ['lesbian', 'gay', 'bi', 'queer', 'ace', 'hetero'],
            'gender': ['f', 'm', 't']}
+
+show_graph_person(g, p=pos, save_to='../data/person.png')
 
 for k, v in to_make.iteritems():
     print 'Drawing graph of', k, '...'
