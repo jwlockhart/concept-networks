@@ -7,9 +7,17 @@ import pandas as pd
 import networkx as nx
 from math import sqrt
 
-def make_net_list(data, idx1='i', idx2='j', idx3='Jaccard', min_weight=0):
+def make_net_list(data, idx1='i', idx2='j', idx3='Jaccard', min_weight=0, attributes=None):
     g = nx.Graph()
-    
+        
+    if attributes is not None:   
+        ids = set(data[idx1]).union(set(data[idx2]))
+        for i in ids:
+            row = attributes.loc[attributes['uid'] == i]
+            g.add_node(i, uni=row['uni'].values[0], identity=row['identity'].values[0],
+                      rank=row['rank'].values[0], gender=row['gender'].values[0],
+                      sexuality=row['sexuality'].values[0])
+        
     for row in data.iterrows():
         w = row[1][idx3]
         if w > min_weight:
