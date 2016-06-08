@@ -74,6 +74,9 @@ attr['sexuality'] = attr.apply(flatten_sexuality, axis=1)
 print 'Creating network...'
 g = make_net_list(r, attributes=attr)
 
+print 'Saving network...'
+nx.write_pajek(g, '../data/person.net')
+
 print 'Doing network layout...'
 pos = nx.spring_layout(g)
 
