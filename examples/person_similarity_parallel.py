@@ -84,6 +84,11 @@ def list_people_data(df):
 
 print 'Creating job list for person v person Jaccard similarity...'
 (id_map, result) = list_people_data(people)
+
+print 'Saving uids...'
+ids = id_map.reset_index()
+ids.to_csv('../data/people_jaccard_ids.tsv', sep='\t', index=False)
+
 print 'Computing person v person similarity...'
 output = view.map_sync(parallel_jaccard, result)
 print 'Computations finished!'
@@ -103,6 +108,11 @@ print 'Done!'
 
 print 'Creating job list for answer v answer Jaccard similarity...'
 (m2, r2) = list_people_data(answers)
+
+print 'Saving uids...'
+ids = m2.reset_index()
+ids.to_csv('../data/answers_jaccard_ids.tsv', sep='\t', index=False)
+
 print 'Computing answer v answer similarity...'
 output2 = view.map_sync(parallel_jaccard, r2)
 print 'Computations finished!'

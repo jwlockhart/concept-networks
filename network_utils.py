@@ -7,6 +7,16 @@ import pandas as pd
 import networkx as nx
 from math import sqrt
 
+def make_net_list(data, idx1='i', idx2='j', idx3='Jaccard', min_weight=0):
+    g = nx.Graph()
+    
+    for row in data.iterrows():
+        w = row[1][idx3]
+        if w > min_weight:
+            g.add_edge(row[1][idx1], row[1][idx2], weight = w)  
+    
+    return g
+
 def make_net(data, min_weight=0, isolates=False, directed=False):
     '''Create a networkx network from our dataframe of edge weights
     Input:

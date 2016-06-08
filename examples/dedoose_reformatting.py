@@ -111,7 +111,8 @@ code_cols = ['culture_problem',
 print 'Selecting columns...'
 keep_cols = ['uni', 'Participant', 'Start', 'Excerpt Copy', 
              'rank', 'identity', 'Q3-g', 'Q3-l', 'Q3-b', 'Q3-quest',
-             'Q3-ace', 'Q3-queer', 'Q4-gq', 'Q4-t', 'Q4-i', 'angry_cishet']
+             'Q3-ace', 'Q3-queer', 'Q4-gq', 'Q4-t', 'Q4-i', 'Q4-f', 
+             'Q4-m', 'angry_cishet']
 keep_cols = keep_cols + code_cols
 df = raw[keep_cols]
 
