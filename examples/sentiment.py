@@ -114,8 +114,8 @@ def ippGatherSentiment():
     speeches = [fname for fname in os.listdir(dataDir) if '.txt' in fname]
     
     print 'Starting parallel sentiment analysis...'
-    results = view.map_sync(ippRunSentiment, speeches)
-    #results = view.map_sync(ippRunSentiment, speeches)
+    results = view.map_async(ippRunSentiment, speeches)
+    results.wait_interactive()
     
     print 'Analysis complete! Packaging as DataFrame...'
     return pd.DataFrame.from_records(results)
