@@ -90,7 +90,8 @@ ids = id_map.reset_index()
 ids.to_csv('../data/people_jaccard_ids.tsv', sep='\t', index=False)
 
 print 'Computing person v person similarity...'
-output = view.map_sync(parallel_jaccard, result)
+output = view.map_async(parallel_jaccard, result)
+output.wait_interactive()
 print 'Computations finished!'
 
 print 'Stitching results together...'
@@ -114,7 +115,8 @@ ids = m2.reset_index()
 ids.to_csv('../data/answers_jaccard_ids.tsv', sep='\t', index=False)
 
 print 'Computing answer v answer similarity...'
-output2 = view.map_sync(parallel_jaccard, r2)
+output2 = view.map_async(parallel_jaccard, r2)
+output2.wait_interactive()
 print 'Computations finished!'
 
 print 'Stitching results together...'
