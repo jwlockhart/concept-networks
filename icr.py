@@ -6,6 +6,9 @@
 
 import pandas as pd
 from sklearn.metrics import cohen_kappa_score
+import sys
+sys.path.insert(0,'outside_code/')
+import krippendorff_alpha as ka
 
 def count_codes(coders, min_coders=1, max_coders=99999, 
                 keep_coder_counts=False):
@@ -97,7 +100,7 @@ def percent_agreement(code_counts, n_coders):
     return (r, avg)
 
 def scotts_pi(code_counts):
-    '''Scott's Pi statistic. 
+    '''Scott's Pi statistic. Assumes two coders, no missing data.
     Scott, W. A. (1955). Reliability of Content Analysis: The Case of Nominal Coding. Public Opinion Quarterly, 19(3), 321–325
     '''
 
@@ -138,7 +141,7 @@ def krippendorffs_alpha(code_counts):
     return (s[['krippendorffs_alpha']], s['krippendorffs_alpha'].mean())
 
 def cohens_kappa(codes1, codes2):
-    '''Cohen's Kappa statistic.
+    '''Cohen's Kappa statistic. Assumes 2 coders, no missing data.
     Cohen, J. (1960). A Coefficient of Agreement for Nominal Scales. Educational and Psychological Measurement, XX(1), 37–46.
     '''
     r = []
@@ -162,8 +165,8 @@ def cohens_kappa(codes1, codes2):
     return (s[['cohens_kappa']], s['cohens_kappa'].mean())
 
 def compute_icr(codes1, codes2):
-    '''Returns several measures of intercoder reliability for two coders with binary 
-    codes and no missing values
+    '''Returns several measures of intercoder reliability for two coders 
+    with binary codes and no missing values.
     '''
     counts = count_codes([codes1, codes2], min_coders=2)
 
@@ -181,3 +184,66 @@ def compute_icr(codes1, codes2):
         together.ix[c, 'n'] = counts[counts[c] > 0].shape[0]
         
     return together.drop('xxx_n_coders_xxx')
+
+def get_k_alpha(coders, col_name):
+    '''Wrapper for external krippendorff function. Works with 
+    multiple coders and missing data.'''
+    tmp = []
+    for c in coders:
+        tmp.append(c[col_name].to_dict())
+        
+    return ka.krippendorff_alpha(data = tmp, 
+                                 metric = ka.nominal_metric)
+
+def get_n(row, counts):
+    c = row['code']
+    return counts[counts[c] > 0].shape[0]
+
+def compute_multi_icr(coders):
+    '''ICR for multiple coders and missing values. 
+    Returns a data frame with Krippendorffs alpha and
+    the number of items used to calculate it (i.e. 
+    those coded by more than one coder).'''
+    
+    #find alphas
+    result = []
+    cols = coders[0].columns.values
+    i = 0
+    for col in cols:
+        tmp = {}
+        tmp['code'] = col
+        tmp['alpha'] = get_k_alpha(coders, col)
+        result.append(tmp)
+        i += 1
+        print 'Finished', i, 'of', len(cols)
+        
+    #Save alphas in dataframe
+    r = pd.DataFrame.from_records(result)
+    
+    #find coder counts for each item
+    cs = icr.count_codes(coders, min_coders=2)
+    
+    #store n items with each code
+    r['n'] = r.apply(get_n, counts=cs, axis=1)
+    
+    return r.sort_values(by='alpha', ascending=False)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
