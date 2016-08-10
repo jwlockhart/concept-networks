@@ -221,7 +221,7 @@ def compute_multi_icr(coders):
     r = pd.DataFrame.from_records(result)
     
     #find coder counts for each item
-    cs = icr.count_codes(coders, min_coders=2)
+    cs = count_codes(coders, min_coders=2)
     
     #store n items with each code
     r['n'] = r.apply(get_n, counts=cs, axis=1)
