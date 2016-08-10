@@ -46,8 +46,9 @@ def krippendorff_alpha(data,metric=interval_metric,force_vecmath=False,convert_i
     
     # set of constants identifying missing values
     maskitems = set((missing_items,))
-    if N is not None:
-        maskitems.add(N.ma.masked_singleton)
+    #if N is not None:
+        #This seems to be broken. I have disabled because I don't need it.
+        #maskitems.add(N.ma.masked_singleton)
     
     # convert input data to a dict of items
     units = {}
