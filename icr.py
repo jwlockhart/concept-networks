@@ -6,8 +6,10 @@
 
 import pandas as pd
 from sklearn.metrics import cohen_kappa_score
+import os
 import sys
-sys.path.insert(0,'outside_code/')
+dir_path = os.path.dirname(os.path.realpath(__file__))
+sys.path.insert(0,dir_path+'/outside_code/')
 import krippendorff_alpha as ka
 
 def count_codes(coders, min_coders=1, max_coders=99999, 
