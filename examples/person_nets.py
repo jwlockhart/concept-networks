@@ -11,11 +11,11 @@ import sys
 sys.path.insert(0,'../')
 from network_utils import *
 
-print 'Reading network data files...'
+print('Reading network data files...')
 r = pd.read_csv('../data/people_jaccard.tsv', sep='\t')
 m = pd.read_csv('../data/people_jaccard_ids.tsv', sep='\t')
 
-print 'Reading person information...'
+print('Reading person information...')
 attr = pd.read_csv('../data/ben_all.tsv', sep='\t')
 tmp = pd.read_csv('../data/gabi_all.tsv', sep='\t')
 
@@ -23,7 +23,7 @@ tmp = pd.read_csv('../data/gabi_all.tsv', sep='\t')
 attr = attr.append(tmp)
 attr = attr.drop_duplicates(subset=['uni', 'Participant'])
 
-print 'Meging network and attribute info...'
+print('Meging network and attribute info...')
 attr = attr.merge(m, how='left', on=['uni', 'Participant'])
 
 #select just the attributes we care about
@@ -31,7 +31,7 @@ attr = attr[['uid', 'uni', 'rank', 'identity',
        'Q3-g', 'Q3-l', 'Q3-b', 'Q3-quest', 'Q3-ace', 'Q3-queer', 'Q4-gq',
        'Q4-t', 'Q4-i', 'Q4-m', 'Q4-f']]
 
-print 'Flattening rank options...'
+print('Flattening rank options...')
 attr = attr.replace(to_replace='likely-undergrad', value='undergrad')
 
 def flatten_gender(row):
@@ -49,7 +49,7 @@ def flatten_gender(row):
         
     return g
 
-print 'Flattening genders into a single variable...'
+print('Flattening genders into a single variable...')
 attr['gender'] = attr.apply(flatten_gender, axis=1)
 
 def flatten_sexuality(row):
@@ -68,16 +68,16 @@ def flatten_sexuality(row):
         s = 'lesbian'       
     return s
 
-print 'Flattening sexualiies into a single variable...'
+print('Flattening sexualiies into a single variable...')
 attr['sexuality'] = attr.apply(flatten_sexuality, axis=1)
 
-print 'Creating network...'
+print('Creating network...')
 g = make_net_list(r, attributes=attr)
 
-print 'Saving network...'
+print('Saving network...')
 nx.write_pajek(g, '../data/person.net')
 
-print 'Doing network layout...'
+print('Doing network layout...')
 pos = nx.spring_layout(g)
 
 def show_graph_person(g, save_to='test.png', p=None, cat_name=None, cat_values=None):
@@ -89,13 +89,13 @@ def show_graph_person(g, save_to='test.png', p=None, cat_name=None, cat_values=N
     
     #layout nodes and their labels
     if p is None:
-        print 'Arranging nodes...'
+        print('Arranging nodes...')
         pos = nx.spring_layout(g)
     else:
         pos = p
 
     #divide edges into groups based on weight
-    print 'Selecting edges...'
+    print('Selecting edges...')
     e9 = []
     e75 = []
     for (u, v, d) in g.edges(data=True):
@@ -105,11 +105,11 @@ def show_graph_person(g, save_to='test.png', p=None, cat_name=None, cat_values=N
             e75.append((u, v))
     
     #draw edges in each group
-    print 'Drawing edges...'
+    print('Drawing edges...')
     nx.draw_networkx_edges(g, pos, edgelist=e9, width=1, alpha=0.3, ax=a)
     nx.draw_networkx_edges(g, pos, edgelist=e75, width=1, alpha=0.2, ax=a)
     
-    print 'Drawing nodes...'
+    print('Drawing nodes...')
     #all nodes:
     if cat_name is None:
         #nx.draw_networkx_nodes(g, pos, node_size=20, ax=a)
@@ -136,7 +136,7 @@ to_make = {'identity': ['sgm','cishet'],
 show_graph_person(g, p=pos, save_to='../data/person.png')
 
 for k, v in to_make.iteritems():
-    print 'Drawing graph of', k, '...'
+    print('Drawing graph of', k, '...')
     show_graph_person(g, p=pos, cat_name=k, cat_values=v, save_to='../data/person_by_'+k+'.png')
 
 

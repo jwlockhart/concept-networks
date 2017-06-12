@@ -4,7 +4,7 @@
 # - binary data
 # - 2 coders
 # - no missing values
-# version 1.1
+# version 1.2
 
 import pandas as pd
 import sys
@@ -14,10 +14,10 @@ import icr
 
 argv = sys.argv
 if len(argv) != 3:
-    print 'Please run this script with exactly 3 arguments.\n$ compute_icr.py [infile_1.tsv] [infile_2.tsv]'
+    print('Please run this script with exactly 3 arguments.\n$ compute_icr.py [infile_1.tsv] [infile_2.tsv]')
     sys.exit()
 
-print 'Loading data files...'
+print('Loading data files...')
 d1 = pd.read_csv(argv[1], sep='\t')
 d2 = pd.read_csv(argv[2], sep='\t')
 
@@ -53,10 +53,10 @@ code_cols = ['culture_problem',
 d1 = d1[code_cols]
 d2 = d2[code_cols]
 
-print "Computing ICR...\n"
+print("Computing ICR...\n")
 results = icr.compute_icr(d1, d2)
 means = results.mean()
-print "Mean ICR stats:\n", means
-print "\nPer-code ICR stats:\n", results
+print("Mean ICR stats:\n", means)
+print("\nPer-code ICR stats:\n", results)
 
-print "\nDone!"
+print("\nDone!")

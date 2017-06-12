@@ -4,7 +4,7 @@
 # - binary data
 # - 2 coders
 # - no missing values
-# version 1.0
+# version 1.1
 
 import pandas as pd
 import sys
@@ -14,7 +14,7 @@ import nlp
 
 argv = sys.argv
 if len(argv) != 2:
-    print 'Please run this script with exactly 1 argument.\n$ nlp_similarity.py [infile.tsv]'
+    print('Please run this script with exactly 1 argument.\n$ nlp_similarity.py [infile.tsv]')
     sys.exit()
 
 #name of the column with the text of answers
@@ -48,7 +48,7 @@ code_cols = ['culture_problem',
              'community_victim']
     
     
-print 'Loading data file...'
+print('Loading data file...')
 df = pd.read_csv(argv[1], sep='\t')
 
 '''Remove the labels Dedoose adds. Generally, they follow
@@ -60,13 +60,13 @@ would be biased in favor of those with more of the same questions.
 '''
 df = df.replace({'Question: Q\d*\w?; Answer:': ''}, regex=True)
 
-print 'Combining answers from each code into documents...'
+print('Combining answers from each code into documents...')
 documents = nlp.make_docs(df, code_cols, text_col)
 
-print 'Calculating cosine similarity between all codes...'
+print('Calculating cosine similarity between all codes...')
 result = nlp.cosine_sim_pd(docs=documents, codes=code_cols)
 
-print 'Results:'
-print result
+print('Results:')
+print(result)
 
-print "\nDone!"
+print("\nDone!")

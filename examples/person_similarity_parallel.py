@@ -2,7 +2,7 @@
 # Example script computing the pairwise similarity of people and/or 
 # responses in a sample. Parallel implementation using ipyparallel. 
 # 
-# version 1.0
+# version 1.1
 
 import pandas as pd
 import ipyparallel
@@ -10,11 +10,11 @@ import sys
 sys.path.insert(0,'../')
 from network_utils import *
 
-print 'Creating cluster client and view...'
+print('Creating cluster client and view...')
 c = ipyparallel.Client()
 view = c.load_balanced_view()
 
-print 'Loading, indexing, and grouping data...'
+print('Loading, indexing, and grouping data...')
 #read in all coded data
 answers = pd.read_csv('../data/merged_all.tsv', sep='\t')
 #set indices
@@ -76,25 +76,25 @@ def list_people_data(df):
     #create a list of jobs where each job is an element and a
     #set of other elements to compare it with.
     for i in range(0, n):
-        dic = {'i':i, 'dat':data.ix[:,0:i]}
+        dic = {'i':i, 'dat':data.ix[:,0:i+1]}
         result.append(dic)
             
     return (id_map, result)
 
 
-print 'Creating job list for person v person Jaccard similarity...'
+print('Creating job list for person v person Jaccard similarity...')
 (id_map, result) = list_people_data(people)
 
-print 'Saving uids...'
+print('Saving uids...')
 ids = id_map.reset_index()
 ids.to_csv('../data/people_jaccard_ids.tsv', sep='\t', index=False)
 
-print 'Computing person v person similarity...'
+print('Computing person v person similarity...')
 output = view.map_async(parallel_jaccard, result)
 output.wait_interactive()
-print 'Computations finished!'
+print('Computations finished!')
 
-print 'Stitching results together...'
+print('Stitching results together...')
 tmp = []
 for o in output:
     tmp.append(pd.DataFrame.from_dict(o))
@@ -103,23 +103,23 @@ tmp = pd.concat(tmp)
 #now make things pretty for saving
 tmp['j'] = tmp.index
 tmp = tmp[['i','j','Jaccard']]
-print 'Saving results...'
+print('Saving results...')
 tmp.to_csv('../data/people_jaccard.tsv', sep='\t', index=False)
-print 'Done!'
+print('Done!')
 
-print 'Creating job list for answer v answer Jaccard similarity...'
+print('Creating job list for answer v answer Jaccard similarity...')
 (m2, r2) = list_people_data(answers)
 
-print 'Saving uids...'
+print('Saving uids...')
 ids = m2.reset_index()
 ids.to_csv('../data/answers_jaccard_ids.tsv', sep='\t', index=False)
 
-print 'Computing answer v answer similarity...'
+print('Computing answer v answer similarity...')
 output2 = view.map_async(parallel_jaccard, r2)
 output2.wait_interactive()
-print 'Computations finished!'
+print('Computations finished!')
 
-print 'Stitching results together...'
+print('Stitching results together...')
 tmp = []
 for o in output2:
     tmp.append(pd.DataFrame.from_dict(o))
@@ -128,8 +128,6 @@ tmp = pd.concat(tmp)
 #now make things pretty for saving
 tmp['j'] = tmp.index
 tmp = tmp[['i','j','Jaccard']]
-print 'Saving results...'
+print('Saving results...')
 tmp.to_csv('../data/answers_jaccard.tsv', sep='\t', index=False)
-print 'Done!'
-
-print 'All done!'
+print('All Done!')

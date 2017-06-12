@@ -12,10 +12,11 @@
 # sentiment analysis is not yet implemented in their API (this would 
 # save significant overhead).
 #
-# Reccomendation: run this on with 1/4 as many engines as cores. 
+# Recommendation: run this on with 1/4 as many engines as cores. 
 # On a 12 core machine, running this on 4 cores tends to use about 
 # 95% of the total processing capacity due to java startup and 
 # shutdown costs. :(
+# version 1.1
 
 import pandas as pd
 import numpy
@@ -24,7 +25,7 @@ import subprocess
 import os
 import ipyparallel
 
-print 'Reading data...'
+print('Reading data...')
 data = pd.read_csv('../data/ben_all.tsv', sep='\t')
 
 def get_q(txt):
@@ -44,17 +45,17 @@ def get_txt(txt):
         t = m.group(1)
     return str(t)
 
-print 'Parsing out question and answer text...'
+print('Parsing out question and answer text...')
 data['Question'] = data['Excerpt Copy'].apply(get_q)
 data['Answer'] = data['Excerpt Copy'].apply(get_txt)
 
 #select just the columns we care about
 data = data[['uni', 'Participant', 'Start', 'Question', 'Answer']]
 
-print 'Saving just the cleaned up answer text...'
+print('Saving just the cleaned up answer text...')
 data.to_csv('../data/just_answers.tsv', sep='\t', index=False)
 
-print 'Separating comments before feeding them to the sentiment analyzer...'
+print('Separating comments before feeding them to the sentiment analyzer...')
 j = 0
 n = len(data)
 for (i, d) in data.iterrows():
@@ -63,10 +64,10 @@ for (i, d) in data.iterrows():
         out.write(d.Answer)
     j += 1
     if j % 1000 == 0:
-        print j, 'of', n
-print 'Done!'
+        print(j, 'of', n)
+print('Done!')
 
-print 'Creating cluster client and view...'
+print('Creating cluster client and view...')
 c = ipyparallel.Client()
 c[:].apply_sync(os.chdir, os.getcwd())
 view = c.load_balanced_view()
@@ -110,25 +111,25 @@ def ippRunSentiment(fname):
 
 def ippGatherSentiment():
     dataDir = '../data/sentiment'
-    print 'Listing answers...'
+    print('Listing answers...')
     speeches = [fname for fname in os.listdir(dataDir) if '.txt' in fname]
     
-    print 'Starting parallel sentiment analysis...'
+    print('Starting parallel sentiment analysis...')
     results = view.map_async(ippRunSentiment, speeches)
     results.wait_interactive()
     
-    print 'Analysis complete! Packaging as DataFrame...'
+    print('Analysis complete! Packaging as DataFrame...')
     return pd.DataFrame.from_records(results)
             
 r = ippGatherSentiment()
 
-print 'Cleaning up DF formating...'
+print('Cleaning up DF formating...')
 r['uni'] = r.name.str.split('_').str.get(0)
 r['Participant'] = r.name.str.split('_').str.get(1)
 r['Start'] = r.name.str.split('_').str.get(2)
 r = r[['uni', 'Participant', 'Start', 'mean', 'sd', 'n', 'raw']]
 
-print 'Saving results...'
+print('Saving results...')
 r.to_csv('../data/sentiment_scores.tsv', sep='\t', index=False)
-print 'Done!'
+print('Done!')
 

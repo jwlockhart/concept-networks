@@ -1,7 +1,7 @@
 # @author Jeff Lockhart <jwlock@umich.edu>
 # Example script for selecting the subset of our data that matches
 # our study criteria. 
-# version 1.1
+# version 1.2
 
 import pandas as pd
 import sys
@@ -12,13 +12,13 @@ from dedoose_utils import *
 
 argv = sys.argv
 if len(argv) != 4:
-    print 'Please run this script with exactly 3 arguments. \n$ select_subset.py [infile.tsv] [outfile.tsv] [sgm|cishet|all]'
+    print('Please run this script with exactly 3 arguments. \n$ select_subset.py [infile.tsv] [outfile.tsv] [sgm|cishet|all]')
     sys.exit()
 
 #Import our data from Dedoose
-print 'Reading in data...'
+print('Reading in data...')
 raw = pd.read_csv(argv[1], sep='\t')
-print 'Found', raw.shape[0], 'excerpts.'
+print('Found', raw.shape[0], 'excerpts.')
 
 #The list of codes I'm interested in
 code_cols = ['culture_problem', 
@@ -48,29 +48,29 @@ code_cols = ['culture_problem',
              'community_victim']
 
 #Select just the columns I want to use in analysis
-print 'Selecting columns...'
+print('Selecting columns...')
 keep_cols = ['uni', 'Participant', 'Start', 'Excerpt Copy', 
              'rank', 'identity']
 keep_cols = keep_cols + code_cols
 df = raw[keep_cols]
 
 #drop excerpts that don't have any interesting codes
-print 'Selecting coded excerpts...'
+print('Selecting coded excerpts...')
 df = drop_uncoded(df, code_cols)
-print 'Found', df.shape[0], 'excerpts with interesting codes applied.'
+print('Found', df.shape[0], 'excerpts with interesting codes applied.')
 
 #drop excerpts from people outside my population of interest
-print 'Selecting study population...'
+print('Selecting study population...')
 if argv[3] == 'all':
-    print 'Selecting everyone...'
+    print('Selecting everyone...')
 else:
     df = df[df['identity'] == argv[3]]
     
-print 'Found', df.shape[0], 'of those excerpts from  the population.'
+print('Found', df.shape[0], 'of those excerpts from  the population.')
 df = df[(df['rank'] == 'undergrad') |
         (df['rank'] == 'likely-undergrad') |
         (df['rank'] == 'grad-pro')]
-print 'Found', df.shape[0], 'of those excerpts from students.'
+print('Found', df.shape[0], 'of those excerpts from students.')
 
 '''
 Sort our excerpts by which set they are from (uni), then their number 
@@ -78,11 +78,11 @@ Sort our excerpts by which set they are from (uni), then their number
 the index where the excerpt starts. This isn't strictly necessary, but 
 I like that it gives me meaningful groupings.
 '''
-print 'Sorting on indices...'
+print('Sorting on indices...')
 df.sort_values(by=['uni', 'Participant', 'Start'], axis=0, inplace=True)
 
 #Export the data to tsv for later use
-print 'Saving...'
+print('Saving...')
 df.to_csv(argv[2], sep='\t', encoding='utf-8', index=False)
 
-print 'Done!'
+print('Done!')

@@ -1,6 +1,6 @@
 # @author Jeff Lockhart <jwlock@umich.edu>
 # Example script for generating network graphs. 
-# version 1.1
+# version 1.2
 
 import pandas as pd
 import networkx as nx
@@ -13,11 +13,11 @@ from network_utils import *
 
 argv = sys.argv
 if len(argv) != 2:
-    print 'Please run this script with exactly 1 argument.\n$ build_network.py [infile.tsv]'
+    print('Please run this script with exactly 1 argument.\n$ build_network.py [infile.tsv]')
     sys.exit()
 
 #Import our data from Dedoose
-print 'Reading in data...'
+print('Reading in data...')
 df = pd.read_csv(argv[1], sep='\t')
 
 #The list of codes we're interested in. 
@@ -47,16 +47,16 @@ code_cols = ['culture_problem',
              #'community_absent', 
              'community_victim']
 
-print 'Counting code applications...'
+print('Counting code applications...')
 tmp = get_freq(df[code_cols])
-print 'Dropping codes applied fewer than 10 times...'
+print('Dropping codes applied fewer than 10 times...')
 df = df[tmp[tmp['count'] >= 10].index.values]
 
-print 'Computing co-occurrance statistics...'
+print('Computing co-occurrance statistics...')
 z = norm_cooccur(df, directed=False)
 z_dir = norm_cooccur(df, directed=True)
 
-print 'Generating network...'
+print('Generating network...')
 g = make_net(data=z, min_weight=1, isolates=False, directed=False)
 g_dir = make_net(data=z_dir, min_weight=1, isolates=False, directed=True)
 
@@ -98,10 +98,10 @@ def show_graph(g):
 
     plt.show()
 
-print 'Drawing undirected network...'
+print('Drawing undirected network...')
 show_graph(g)
 
-print 'Drawing directed network...'
+print('Drawing directed network...')
 show_graph(g_dir)
 
 
@@ -110,7 +110,7 @@ z_dir_r = reverse(z_dir)
 g_r = make_net(data=z_dir_r, min_weight=0, isolates=False)
 
 
-print 'Done!'
+print('Done!')
 
 
 

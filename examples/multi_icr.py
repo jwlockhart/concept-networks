@@ -4,7 +4,7 @@
 # - nominal data
 # - 2+ coders
 # - missing values okay
-# version 1.0
+# version 1.1
 
 import pandas as pd
 import sys
@@ -13,7 +13,7 @@ sys.path.insert(0,'../')
 import icr
 import dedoose_utils as du
 
-print 'Loading data files...'
+print('Loading data files...')
 d1 = pd.read_csv('../data/ben_all.tsv', sep='\t')
 d2 = pd.read_csv('../data/gabi_all.tsv', sep='\t')
 d3 = pd.read_csv('../data/lizzie_all.tsv', sep='\t')
@@ -55,15 +55,15 @@ def form(df):
     df = du.drop_uncoded(df, code_cols)
     return df
 
-print 'Formatting dataframes...'
+print('Formatting dataframes...')
 d1 = form(d1)
 d2 = form(d2)
 d3 = form(d3)
 
-print "Computing ICR..."
+print("Computing ICR...")
 results = icr.compute_multi_icr([d1, d2, d3])
 means = results.mean()
-print "Mean ICR stats:\n", means
-print "\nPer-code ICR stats:\n", results
+print("Mean ICR stats:\n", means)
+print("\nPer-code ICR stats:\n", results)
 
-print "\nDone!"
+print("\nDone!")

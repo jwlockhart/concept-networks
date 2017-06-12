@@ -1,7 +1,7 @@
 # @author Jeff Lockhart <jwlock@umich.edu>
 # Actual script used to generate network diagrams in drafts of 
 # the project paper for which this code is written.
-# version 1.1
+# version 1.2
 
 import pandas as pd
 import networkx as nx
@@ -86,19 +86,19 @@ def show_graph(g, pos, save_to='out.png', ti='title'):
 
 
 #Import our answer-level data
-print 'Reading in answer data...'
+print('Reading in answer data...')
 merged = pd.read_csv('../data/sgm_stud/merged.tsv', sep='\t')
 ben = pd.read_csv('../data/sgm_stud/ben.tsv', sep='\t')
 gabi = pd.read_csv('../data/sgm_stud/gabi.tsv', sep='\t')
 
-print 'Generating answer networks...'
+print('Generating answer networks...')
 g_merged = gen_net(merged)
 g_ben = gen_net(ben)
 g_gabi = gen_net(gabi)
 
 g_merged_un = gen_net(merged, directed=False)
     
-print 'Drawing answer networks...'
+print('Drawing answer networks...')
 #fix the positions of nodes to the the same in all networks
 layout = g_merged.copy()
 layout.add_nodes_from(merged.columns.values)
@@ -115,19 +115,19 @@ show_graph(g_gabi, p, '../data/sgm_stud/di_ans_gabi.png', ti='Per-answer Gabi')
 show_graph(g_merged_un, p, '../data/sgm_stud/un_ans_merged.png', ti='Per-person All Coders')
 
 #import data aggregated to person-level
-print 'Reading in person data...'
+print('Reading in person data...')
 merged = pd.read_csv('../data/sgm_stud/merged_person.tsv', sep='\t')
 ben = pd.read_csv('../data/sgm_stud/ben_person.tsv', sep='\t')
 gabi = pd.read_csv('../data/sgm_stud/gabi_person.tsv', sep='\t')
 
-print 'Generating person networks...'
+print('Generating person networks...')
 g_merged = gen_net(merged)
 g_ben = gen_net(ben)
 g_gabi = gen_net(gabi)
 
 g_merged_un = gen_net(merged, directed=False)
     
-print 'Drawing person networks...'
+print('Drawing person networks...')
     
 show_graph(g_merged, p, '../data/sgm_stud/di_per_merged.png', ti='Per-person All Coders')
 show_graph(g_ben, p, '../data/sgm_stud/di_per_ben.png', ti='Per-person Ben')
@@ -136,26 +136,26 @@ show_graph(g_gabi, p, '../data/sgm_stud/di_per_gabi.png', ti='Per-person Gabi')
 show_graph(g_merged_un, p, '../data/sgm_stud/un_per_merged.png', ti='Per-person All Coders')
 
 #Import our answer-level data for cishet people
-print 'Reading in answer data...'
+print('Reading in answer data...')
 merged = pd.read_csv('../data/ch_stud/merged.tsv', sep='\t')
 ben = pd.read_csv('../data/ch_stud/ben.tsv', sep='\t')
 gabi = pd.read_csv('../data/ch_stud/gabi.tsv', sep='\t')
 
-print 'Generating answer networks...'
+print('Generating answer networks...')
 g_merged = gen_net(merged)
 g_ben = gen_net(ben)
 g_gabi = gen_net(gabi)
     
 g_merged_un = gen_net(merged, directed=False)
     
-print 'Drawing answer networks...'    
+print('Drawing answer networks...')
 show_graph(g_merged, p, '../data/ch_stud/di_ans_merged.png', ti='Per-answer All Coders')
 show_graph(g_ben, p, '../data/ch_stud/di_ans_ben.png', ti='Per-answer Ben')
 show_graph(g_gabi, p, '../data/ch_stud/di_ans_gabi.png', ti='Per-answer Gabi')
 
 show_graph(g_merged_un, p, '../data/ch_stud/un_ans_merged.png', ti='Per-person All Coders')
 
-print 'Drawing NLP networks...'
+print('Drawing NLP networks...')
 
 text_col = 'Excerpt Copy'
 df = pd.read_csv('../data/ben_all.tsv', sep='\t')
@@ -207,7 +207,7 @@ def show_graph_nlp(g, save_to='test.png'):
     
 show_graph_nlp(g, '../data/nlp_net.png')
     
-print 'Done!'
+print('Done!')
 
 
 

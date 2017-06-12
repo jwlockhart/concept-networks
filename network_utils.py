@@ -14,9 +14,13 @@ def make_net_list(data, idx1='i', idx2='j', idx3='Jaccard', min_weight=0, attrib
         ids = set(data[idx1]).union(set(data[idx2]))
         for i in ids:
             row = attributes.loc[attributes['uid'] == i]
-            g.add_node(i, uni=row['uni'].values[0], identity=row['identity'].values[0],
-                      rank=row['rank'].values[0], gender=row['gender'].values[0],
-                      sexuality=row['sexuality'].values[0])
+            g.add_node(i, uni=row['uni'].values[0], 
+                       identity=row['identity'].values[0],
+                       rank=row['rank'].values[0], 
+                       gender=row['gender'].values[0],
+                       sexuality=row['sexuality'].values[0],
+                       cis=row['cis'].values[0]
+                      )
         
     for row in data.iterrows():
         w = row[1][idx3]
@@ -52,8 +56,8 @@ def make_net(data, min_weight=0, isolates=False, directed=False):
                 #skip self-loops
                 continue
             #if this edge has enough weight, add it
-            if data.ix[r, c] > min_weight: 
-                g.add_edge(r, c, weight = data.ix[r, c])                      
+            if data.loc[r, c] > min_weight: 
+                g.add_edge(r, c, weight = data.loc[r, c])                      
 
     return g
 
@@ -88,7 +92,7 @@ def rand_cooccur(data, stats):
     #create columns for each code as the probability of cooccurance
     #with the code in each row, assuming independence
     for c in cols:
-        rand_co[c] = rand_co['frequency'] * stats.ix[c, 'frequency']
+        rand_co[c] = rand_co['frequency'] * stats.loc[c, 'frequency']
     
     #drop vestigial columns from stats df
     return rand_co.drop(['count', 'frequency', 'var'], axis=1)
@@ -102,7 +106,7 @@ def real_cooccur(data, stats):
     for r in cols: #rows
         for c in cols: #columns
             #set this cell to the fraction of rows with both codes
-            real_co.ix[r, c] = data[(data[r]) & 
+            real_co.loc[r, c] = data[(data[r]) & 
                                   (data[c])].shape[0] / rows
     
     #drop vestigial columns from stats df
@@ -120,13 +124,13 @@ def normed_diff(rand, real, stats):
     for r in cols: #rows
         for c in cols: #columns
             #difference between actual and predicted values
-            diff = (real.ix[r, c] - rand.ix[r, c]) 
+            diff = (real.loc[r, c] - rand.loc[r, c]) 
             #standard deviation under null hypothesis
-            stdiv = sqrt((stats.ix[r, 'var']) + 
-                                   (stats.ix[c, 'var']))
+            stdiv = sqrt((stats.loc[r, 'var']) + 
+                                   (stats.loc[c, 'var']))
             #TODO: fix this stdiv 
             #z-scores 
-            z.ix[r, c] = diff / stdiv
+            z.loc[r, c] = diff / stdiv
     
     return z 
 
@@ -141,7 +145,7 @@ def directed_random(data, stats):
         for c in cols: #columns
             #we expect to see c in instances of r at the same
             #rate we see c overall
-            dr.ix[r, c] = stats.ix[c, 'frequency']
+            dr.loc[r, c] = stats.loc[c, 'frequency']
     
     return dr.drop(['count', 'frequency', 'var'], axis=1)
 
@@ -156,16 +160,16 @@ def directed_proportions(data, stats):
     for r in cols: #rows
         for c in cols: #columns
             #count of r as float
-            alone = 1.0 * stats.ix[r, 'count']
+            alone = 1.0 * stats.loc[r, 'count']
             if alone == 0:
                 #avoid div/zero error for codes we never see
-                dp.ix[r, c] = 0
+                dp.loc[r, c] = 0
             else:
                 #count of r and c together
                 together = data[(data[r]) & (data[c])].shape[0]
                 #divide them by the total occurances of code r
                 #to get how often we see c given we see r
-                dp.ix[r, c] = together / alone
+                dp.loc[r, c] = together / alone
     
     return dp.drop(['count', 'frequency', 'var'], axis=1)
 
@@ -180,8 +184,8 @@ def krippendorff(data, stats):
 
     for r in cols: #rows
         for c in cols: #columns
-            count_r = stats.ix[r, 'count']
-            count_c = stats.ix[c, 'count']
+            count_r = stats.loc[r, 'count']
+            count_c = stats.loc[c, 'count']
             both = data[(data[r]) & (data[c])].shape[0]
             xor = count_r + count_c - (both * 2)
             neither = n - both - xor
@@ -190,7 +194,7 @@ def krippendorff(data, stats):
             xor = xor * 2
             neither = neither * 2
             
-            dp.ix[r, c] = 1 - ( (n-1) * (xor / 
+            dp.loc[r, c] = 1 - ( (n-1) * (xor / 
                                          ((neither + xor) * (xor + both)) ) )
     
     return dp.drop(['count', 'frequency', 'var'], axis=1)
@@ -207,14 +211,14 @@ def directed_normed_z(real, rand, stats, n):
     for r in cols: #rows
         for c in cols: #columns
             #difference between actual and predicted values
-            diff = (real.ix[r, c] - rand.ix[r, c]) 
+            diff = (real.loc[r, c] - rand.loc[r, c]) 
             
             #pooled stddiv between overall rate and conditional rate
-            stdiv = sqrt( var(stats.ix[c, 'frequency'], n) + 
-                      var(real.ix[r, c], stats.ix[r, 'count']) )
+            stdiv = sqrt( var(stats.loc[c, 'frequency'], n) + 
+                      var(real.loc[r, c], stats.loc[r, 'count']) )
             
             #z-scores 
-            z.ix[r, c] = diff / stdiv
+            z.loc[r, c] = diff / stdiv
     
     return z
 
@@ -229,9 +233,9 @@ def directed_lift(real, rand, stats, n):
     for r in cols: #rows
         for c in cols: #columns
             try:
-                lift.ix[r, c] = (real.ix[r, c] / rand.ix[r, c]) 
+                lift.loc[r, c] = (real.loc[r, c] / rand.loc[r, c]) 
             except ZeroDivisionError:
-                lift.ix[r, c] = float('NaN')
+                lift.loc[r, c] = float('NaN')
     
     return lift
 
@@ -299,9 +303,9 @@ def all_v_all_jaccard_sim(df):
     
     for i in range(1, n):
         if i % 50 == 0:
-            print (i*100.0)/n, '% of', n, 'done...'
+            print((i*100.0)/n, '% of', n, 'done...')
         for j in range(1, i):
-            result.ix[i, j] = jaccard(data[i], data[j])
+            result.iloc[i, j] = jaccard(data[i], data[j])
     
     return (id_map, result)
 
@@ -358,7 +362,7 @@ def list_people_data(df):
     #create a list of jobs where each job is an element and a
     #set of other elements to compare it with.
     for i in range(0, n):
-        dic = {'i':i, 'dat':data.ix[:,0:i]}
+        dic = {'i':i, 'dat':data.iloc[:,0:i+1]}
         result.append(dic)
             
     return (id_map, result)
